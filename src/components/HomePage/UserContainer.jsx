@@ -1,7 +1,8 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import React from "react";
 import ExpenseCard from "./ExpenseCard";
 import UserCard from "./UserCard";
+import { Add } from "@mui/icons-material";
 
 export default function UserContainer({ Users, handleClick }) {
   return (
@@ -46,8 +47,7 @@ export default function UserContainer({ Users, handleClick }) {
       <Box
         sx={{
           width: "100%",
-          height: "529px",
-
+          height: "461px",
           "&:hover": {
             overflowY: "auto", // Show overflow when hovering over the side menu
           },
@@ -98,6 +98,30 @@ export default function UserContainer({ Users, handleClick }) {
             </Typography>
           </Box>
         )}
+      </Box>
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          flexDirection: "row",
+          padding: 2,
+          boxShadow: "0 -1px 0 0 #e3e3e3",
+          gap: 2,
+        }}
+      >
+        <Button
+          sx={{
+            background: "blue",
+            color: "white",
+            fontWeight: "bold",
+            width: "50%",
+          }}
+          startIcon={<Add />}
+        >
+          Add customer
+        </Button>
       </Box>
     </Stack>
   );

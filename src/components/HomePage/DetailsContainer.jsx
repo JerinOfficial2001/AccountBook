@@ -1,4 +1,4 @@
-import { Avatar, Box, Stack, Typography } from "@mui/material";
+import { Avatar, Box, Button, Stack, Typography } from "@mui/material";
 import React from "react";
 import ExpenseCard from "./ExpenseCard";
 import CollectionCard, { stringAvatar } from "./CollectionCard";
@@ -77,7 +77,7 @@ export default function DetailsContainer({ partyData, collections }) {
       <Box
         sx={{
           width: "100%",
-          height: "529px",
+          height: "469px",
 
           "&:hover": {
             overflowY: "auto", // Show overflow when hovering over the side menu
@@ -101,6 +101,41 @@ export default function DetailsContainer({ partyData, collections }) {
         {collections.map((data, index) => (
           <CollectionCard key={index} data={data} />
         ))}
+      </Box>
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexDirection: "row",
+          padding: 2,
+          boxShadow: "0 -1px 0 0 #e3e3e3",
+          gap: 2,
+        }}
+      >
+        <Button
+          size="small"
+          sx={{
+            background: "#ffadad",
+            color: "red",
+            fontWeight: "bold",
+            width: "50%",
+          }}
+        >
+          You gave
+        </Button>
+        <Button
+          size="small"
+          sx={{
+            background: "#d1fadf",
+            color: "green",
+            fontWeight: "bold",
+            width: "50%",
+          }}
+        >
+          You got
+        </Button>
       </Box>
     </Stack>
   );

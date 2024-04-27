@@ -1,9 +1,44 @@
 import { Avatar, Box, Button, Stack, Typography } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import ExpenseCard from "./ExpenseCard";
 import CollectionCard, { stringAvatar } from "./CollectionCard";
+import MyModal from "./MyModal";
+import toast from "react-hot-toast";
 
 export default function DetailsContainer({ partyData, collections }) {
+  const [openModal, setopenModal] = useState(false);
+  const [inputDatas, setinputDatas] = useState({
+    modelTitle: "Add Entry",
+    details: "",
+    amount: "",
+    expensetype: "",
+    date: "",
+  });
+  const handleFormData = (name, value) => {
+    setinputDatas((prev) => ({ ...prev, [name]: value }));
+  };
+  const handleCloseModal = () => {
+    setopenModal(false);
+  };
+  const handleOpenModal = (type) => {
+    setopenModal(true);
+    handleFormData("expensetype", type);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const keys = Object.keys(inputDatas);
+    const requiredFields = keys.every((key) => inputDatas[key] !== "");
+    if (requiredFields) {
+      console.log(inputDatas, requiredFields);
+    } else {
+      toast.error("All fields are mandatory");
+    }
+  };
+  const handleOnchange = (event) => {
+    const { name, value } = event.target;
+    handleFormData(name, value);
+  };
   return (
     <Stack
       sx={{
@@ -115,28 +150,50 @@ export default function DetailsContainer({ partyData, collections }) {
         }}
       >
         <Button
+          onClick={() => {
+            handleOpenModal("DEBIT");
+          }}
           size="small"
+          variant="contained"
           sx={{
             background: "#ffadad",
             color: "red",
             fontWeight: "bold",
             width: "50%",
+            "&:hover": {
+              backgroundColor: "#e79a9a",
+            },
           }}
         >
           You gave
         </Button>
         <Button
+          onClick={() => {
+            handleOpenModal("CREDIT");
+          }}
           size="small"
+          variant="contained"
           sx={{
-            background: "#d1fadf",
+            background: "#90d8a8",
             color: "green",
             fontWeight: "bold",
             width: "50%",
+            "&:hover": {
+              backgroundColor: "#a2deb6",
+            },
           }}
         >
           You got
         </Button>
       </Box>
+      <MyModal
+        open={openModal}
+        handleClose={handleCloseModal}
+        data={inputDatas}
+        type="entry"
+        handleOnchange={handleOnchange}
+        handleSubmit={handleSubmit}
+      />
     </Stack>
   );
 }

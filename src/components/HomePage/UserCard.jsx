@@ -42,7 +42,7 @@ function stringAvatar(name) {
   };
 }
 
-export default function UserCard({ data, handleClick }) {
+export default function UserCard({ data, handleClick, selectedParty }) {
   return (
     <Box
       sx={{
@@ -54,6 +54,7 @@ export default function UserCard({ data, handleClick }) {
         flexDirection: "row",
         paddingX: 5,
         color: "#5d5d5d",
+        background: selectedParty == data.customername ? "#cbcbcb45" : "",
         "&:hover": {
           background: "#cbcbcb45",
         },

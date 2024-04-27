@@ -9,13 +9,23 @@ import { useState } from "react";
 import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
 import UserContainer from "@/src/components/HomePage/UserContainer";
 import DetailsContainer from "@/src/components/HomePage/DetailsContainer";
+import { Toaster } from "react-hot-toast";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const [tabName, settabName] = useState("CUSTOMER");
   const [PartyData, setPartyData] = useState(null);
+  const [selectedParty, setselectedParty] = useState("");
+
   const handleTabName = (e, name) => {
     settabName(name);
+  };
+  const handleOpenUserDetail = (id) => {
+    const particularPartyData = customers.find((item) => item._id == id);
+    if (particularPartyData) {
+      setPartyData(particularPartyData);
+      setselectedParty(particularPartyData.customername);
+    }
   };
   const customers = [
     {
@@ -35,30 +45,36 @@ export default function Home() {
       phone: 9736352516,
     },
   ];
-  const handleOpenUserDetail = (id) => {
-    const particularPartyData = customers.find((item) => item._id == id);
-    if (particularPartyData) {
-      setPartyData(particularPartyData);
-    }
-  };
-
   const tabArr = [
     {
       label: "Customers",
       value: "CUSTOMER",
       content: (
-        <UserContainer handleClick={handleOpenUserDetail} Users={customers} />
+        <UserContainer
+          type="CUSTOMER"
+          handleClick={handleOpenUserDetail}
+          Users={customers}
+          selectedParty={selectedParty}
+        />
       ),
     },
     {
       label: "Supplier",
       value: "SUPPLIER",
-      content: <UserContainer Users={[]} />,
+      content: (
+        <UserContainer
+          type="SUPPLIER"
+          Users={[]}
+          handleClick={handleOpenUserDetail}
+          selectedParty={selectedParty}
+        />
+      ),
     },
   ];
 
   return (
     <MiniDrawer>
+      <Toaster position="top-center" />
       <Stack
         sx={{
           width: "60%",

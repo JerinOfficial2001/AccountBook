@@ -1,18 +1,57 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import ExpenseCard from "./ExpenseCard";
 import UserCard from "./UserCard";
 import { Add } from "@mui/icons-material";
+import MyModal from "./MyModal";
+import toast from "react-hot-toast";
 
-export default function UserContainer({ Users, handleClick }) {
+export default function UserContainer({
+  Users,
+  handleClick,
+  type,
+  selectedParty,
+}) {
+  const [openModal, setopenModal] = useState(false);
+  const [inputDatas, setinputDatas] = useState({
+    modelTitle: "Add New Party",
+    customername: "",
+    phone: "",
+    amount: "",
+    expensetype: "",
+    type: "",
+  });
+  const handleCloseModal = () => {
+    setopenModal(false);
+  };
+  const handleOpenModal = () => {
+    setopenModal(true);
+  };
+  const handleFormData = (name, value) => {
+    setinputDatas((prev) => ({ ...prev, [name]: value }));
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const keys = Object.keys(inputDatas);
+    const requiredFields = keys.every((key) => inputDatas[key] !== "");
+    if (requiredFields) {
+      console.log(inputDatas, requiredFields);
+    } else {
+      toast.error("All fields are mandatory");
+    }
+  };
+  const handleOnchange = (event) => {
+    const { name, value } = event.target;
+    handleFormData(name, value);
+  };
   return (
     <Stack
-      sx={{ width: "100%", justifyContent: "space-between", height: "100%" }}
+      sx={{ width: "100%", justifyContent: "space-between", height: "90vh" }}
     >
       <Box
         sx={{
           width: "100%",
-          height: "50px",
+          height: "7%",
           display: "flex",
           justifyContent: "space-around",
           alignItems: "center",
@@ -27,7 +66,7 @@ export default function UserContainer({ Users, handleClick }) {
       <Box
         sx={{
           width: "100%",
-          height: "50px",
+          height: "6%",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -47,7 +86,7 @@ export default function UserContainer({ Users, handleClick }) {
       <Box
         sx={{
           width: "100%",
-          height: "461px",
+          height: Users.length > 0 ? "77%" : "87%",
           "&:hover": {
             overflowY: "auto", // Show overflow when hovering over the side menu
           },
@@ -69,7 +108,12 @@ export default function UserContainer({ Users, handleClick }) {
       >
         {Users.length > 0 ? (
           Users.map((data, index) => (
-            <UserCard key={index} data={data} handleClick={handleClick} />
+            <UserCard
+              selectedParty={selectedParty}
+              key={index}
+              data={data}
+              handleClick={handleClick}
+            />
           ))
         ) : (
           <Box
@@ -99,30 +143,46 @@ export default function UserContainer({ Users, handleClick }) {
           </Box>
         )}
       </Box>
-      <Box
-        sx={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "flex-end",
-          alignItems: "center",
-          flexDirection: "row",
-          padding: 2,
-          boxShadow: "0 -1px 0 0 #e3e3e3",
-          gap: 2,
-        }}
-      >
-        <Button
+      {Users.length !== 0 && (
+        <Box
           sx={{
-            background: "blue",
-            color: "white",
-            fontWeight: "bold",
-            width: "50%",
+            height: "10%",
+            width: "100%",
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            flexDirection: "row",
+            padding: 2,
+            boxShadow: "0 -1px 0 0 #e3e3e3",
+            gap: 2,
           }}
-          startIcon={<Add />}
         >
-          Add customer
-        </Button>
-      </Box>
+          <Button
+            onClick={handleOpenModal}
+            variant="contained"
+            sx={{
+              background: "blue",
+              color: "white",
+              fontWeight: "bold",
+              width: "40%",
+              "&:hover": {
+                backgroundColor: "#4646ed",
+              },
+            }}
+            startIcon={<Add />}
+          >
+            {type == "CUSTOMER" ? " Add Customer" : "Add Supplier"}
+          </Button>
+        </Box>
+      )}
+      <MyModal
+        open={openModal}
+        handleClose={handleCloseModal}
+        data={inputDatas}
+        type="party"
+        handleOnchange={handleOnchange}
+        handleSubmit={handleSubmit}
+      />
     </Stack>
   );
 }

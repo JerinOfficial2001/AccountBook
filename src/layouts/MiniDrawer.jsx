@@ -226,7 +226,13 @@ export default function MiniDrawer({ children }) {
           flexGrow: 1,
           width: "100%",
           display: "flex",
-          flexDirection: "row",
+          flexDirection: {
+            xs: "column",
+            sm: "column",
+            md: "row",
+            lg: "row",
+            xl: "row",
+          },
           alignItems: "center",
         }}
       >

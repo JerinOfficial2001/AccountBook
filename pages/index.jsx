@@ -105,7 +105,7 @@ export default function Home() {
       <Toaster position="top-center" />
       <Stack
         sx={{
-          width: "60%",
+          width: { xs: "100%", sm: "100%", md: "60%", lg: "60%", xl: "60%" },
         }}
       >
         <TabContainer
@@ -115,7 +115,11 @@ export default function Home() {
         />
       </Stack>
       <Stack
-        sx={{ width: "40%", maxHeight: "100vh", justifyContent: "center" }}
+        sx={{
+          width: { xs: "100%", sm: "100%", md: "40%", lg: "40%", xl: "40%" },
+          maxHeight: "100vh",
+          justifyContent: "center",
+        }}
       >
         {PartyData ? (
           <DetailsContainer

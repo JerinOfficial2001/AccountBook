@@ -198,7 +198,7 @@ export default function UserContainer({
             background: "blue",
             color: "white",
             fontWeight: "bold",
-            width: "40%",
+            width: { xs: "100%", sm: "100%", md: "40%", lg: "40%", xl: "40%" },
             "&:hover": {
               backgroundColor: "#4646ed",
             },

@@ -5,46 +5,68 @@ import styles from "@/styles/Home.module.css";
 import MiniDrawer from "@/src/layouts/MiniDrawer";
 import { Box, Stack, Typography } from "@mui/material";
 import TabContainer from "@/src/components/HomePage/TabContainer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
 import UserContainer from "@/src/components/HomePage/UserContainer";
 import DetailsContainer from "@/src/components/HomePage/DetailsContainer";
 import { Toaster } from "react-hot-toast";
+import { GetStaticsByType } from "@/src/controllers/statics";
+import { getDecryptedCookie } from "@/src/utils/EncryptCookie";
+import { GetPartyByStaticsID } from "@/src/controllers/party";
+import { GetCollectionByPartyID } from "@/src/controllers/collections";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const [tabName, settabName] = useState("CUSTOMER");
   const [PartyData, setPartyData] = useState(null);
   const [selectedParty, setselectedParty] = useState("");
-
+  const [staticsDetails, setstaticsDetails] = useState(null);
+  const [allParties, setallParties] = useState([]);
+  const [allCollections, setallCollections] = useState([]);
+  const cookie = getDecryptedCookie("userData");
+  const cachedData = cookie ? JSON.parse(cookie) : false;
+  const fetchData = () => {
+    if (cachedData) {
+      GetStaticsByType({
+        id: cachedData._id,
+        token: cachedData.accessToken,
+        type: tabName,
+      }).then((data) => {
+        setstaticsDetails(data);
+        GetPartyByStaticsID({
+          staticID: data?._id,
+          userID: cachedData._id,
+          token: cachedData.accessToken,
+        }).then((data) => {
+          setallParties(data);
+        });
+      });
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, [tabName]);
+  const fetchCollection = (id) => {
+    GetCollectionByPartyID({
+      partyID: id,
+      userID: cachedData._id,
+      token: cachedData.accessToken,
+    }).then((data) => {
+      setallCollections(data);
+    });
+  };
   const handleTabName = (e, name) => {
     settabName(name);
   };
   const handleOpenUserDetail = (id) => {
-    const particularPartyData = customers.find((item) => item._id == id);
+    const particularPartyData = allParties.find((item) => item._id == id);
     if (particularPartyData) {
       setPartyData(particularPartyData);
-      setselectedParty(particularPartyData.customername);
+      setselectedParty(particularPartyData.partyname);
     }
+    fetchCollection(id);
   };
-  const customers = [
-    {
-      _id: 1,
-      expensetype: "debit",
-      customername: "John Imman",
-      amount: "3000",
-      date: "2 days ago",
-      phone: 9876526262,
-    },
-    {
-      _id: 2,
-      expensetype: "credit",
-      customername: "John",
-      amount: "2000",
-      date: "2 mins ago",
-      phone: 9736352516,
-    },
-  ];
+
   const tabArr = [
     {
       label: "Customers",
@@ -53,8 +75,11 @@ export default function Home() {
         <UserContainer
           type="CUSTOMER"
           handleClick={handleOpenUserDetail}
-          Users={customers}
+          Users={allParties}
           selectedParty={selectedParty}
+          staticsDetails={staticsDetails}
+          cachedData={cachedData}
+          fetchData={fetchData}
         />
       ),
     },
@@ -64,9 +89,12 @@ export default function Home() {
       content: (
         <UserContainer
           type="SUPPLIER"
-          Users={[]}
+          Users={allParties}
           handleClick={handleOpenUserDetail}
           selectedParty={selectedParty}
+          staticsDetails={staticsDetails}
+          cachedData={cachedData}
+          fetchData={fetchData}
         />
       ),
     },
@@ -90,7 +118,13 @@ export default function Home() {
         sx={{ width: "40%", maxHeight: "100vh", justifyContent: "center" }}
       >
         {PartyData ? (
-          <DetailsContainer partyData={PartyData} collections={customers} />
+          <DetailsContainer
+            allCollections={allCollections}
+            cachedData={cachedData}
+            partyData={PartyData}
+            fetchData={fetchData}
+            fetchCollection={fetchCollection}
+          />
         ) : (
           <Box
             sx={{

@@ -1,11 +1,18 @@
 import { Avatar, Box, Button, Stack, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ExpenseCard from "./ExpenseCard";
 import CollectionCard, { stringAvatar } from "./CollectionCard";
 import MyModal from "./MyModal";
 import toast from "react-hot-toast";
+import { CreateCollection } from "@/src/controllers/collections";
 
-export default function DetailsContainer({ partyData, collections }) {
+export default function DetailsContainer({
+  cachedData,
+  partyData,
+  fetchData,
+  allCollections,
+  fetchCollection,
+}) {
   const [openModal, setopenModal] = useState(false);
   const [inputDatas, setinputDatas] = useState({
     modelTitle: "Add Entry",
@@ -13,7 +20,9 @@ export default function DetailsContainer({ partyData, collections }) {
     amount: "",
     expensetype: "",
     date: "",
+    partyID: "",
   });
+
   const handleFormData = (name, value) => {
     setinputDatas((prev) => ({ ...prev, [name]: value }));
   };
@@ -24,15 +33,34 @@ export default function DetailsContainer({ partyData, collections }) {
     setopenModal(true);
     handleFormData("expensetype", type);
   };
-
+  useEffect(() => {
+    if (partyData) {
+      handleFormData("partyID", partyData._id);
+    }
+  }, [partyData]);
   const handleSubmit = (e) => {
     e.preventDefault();
     const keys = Object.keys(inputDatas);
     const requiredFields = keys.every((key) => inputDatas[key] !== "");
-    if (requiredFields) {
-      console.log(inputDatas, requiredFields);
+    if (requiredFields && partyData && partyData?._id) {
+      const newDatas = {
+        userID: cachedData._id,
+        token: cachedData.accessToken,
+        data: inputDatas,
+      };
+      CreateCollection(newDatas).then((data) => {
+        if (data?.status == "ok") {
+          handleCloseModal();
+          fetchData();
+          fetchCollection(partyData?._id);
+        }
+      });
     } else {
-      toast.error("All fields are mandatory");
+      if (inputDatas.partyID == "") {
+        toast.error("PartyID is mandatory");
+      } else {
+        toast.error("All fields are mandatory");
+      }
     }
   };
   const handleOnchange = (event) => {
@@ -57,10 +85,10 @@ export default function DetailsContainer({ partyData, collections }) {
           color: "#5d5d5d",
         }}
       >
-        <Avatar {...stringAvatar(partyData?.customername)} />
+        <Avatar {...stringAvatar(partyData?.partyname)} />
         <Stack>
           <Typography sx={{ fontWeight: "bold", color: "black" }}>
-            {partyData?.customername}
+            {partyData?.partyname}
           </Typography>
           <Typography>{partyData?.phone}</Typography>
         </Stack>
@@ -81,7 +109,7 @@ export default function DetailsContainer({ partyData, collections }) {
           Net balance :
         </Typography>
         <ExpenseCard
-          amount={partyData?.amount}
+          amount={partyData?.amount ? partyData?.amount : 0}
           condition={partyData?.expensetype}
           type="collection"
         />
@@ -133,7 +161,7 @@ export default function DetailsContainer({ partyData, collections }) {
           },
         }}
       >
-        {collections.map((data, index) => (
+        {allCollections.map((data, index) => (
           <CollectionCard key={index} data={data} />
         ))}
       </Box>

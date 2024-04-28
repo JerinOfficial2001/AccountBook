@@ -5,21 +5,27 @@ import UserCard from "./UserCard";
 import { Add } from "@mui/icons-material";
 import MyModal from "./MyModal";
 import toast from "react-hot-toast";
+import { useEffect } from "react";
+import { CreateParty } from "@/src/controllers/party";
 
 export default function UserContainer({
   Users,
   handleClick,
   type,
   selectedParty,
+  staticsDetails,
+  cachedData,
+  fetchData,
 }) {
   const [openModal, setopenModal] = useState(false);
   const [inputDatas, setinputDatas] = useState({
     modelTitle: "Add New Party",
-    customername: "",
+    partyname: "",
     phone: "",
-    amount: "",
-    expensetype: "",
+    // amount: "",
+    // expensetype: "CREDIT",
     type: "",
+    staticsID: staticsDetails ? staticsDetails._id : "",
   });
   const handleCloseModal = () => {
     setopenModal(false);
@@ -30,14 +36,34 @@ export default function UserContainer({
   const handleFormData = (name, value) => {
     setinputDatas((prev) => ({ ...prev, [name]: value }));
   };
+  useEffect(() => {
+    if (staticsDetails) {
+      handleFormData("staticsID", staticsDetails._id);
+    }
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const keys = Object.keys(inputDatas);
     const requiredFields = keys.every((key) => inputDatas[key] !== "");
-    if (requiredFields) {
-      console.log(inputDatas, requiredFields);
+    if (requiredFields && staticsDetails && staticsDetails?._id) {
+      const newDatas = {
+        userID: cachedData._id,
+        token: cachedData.accessToken,
+        data: inputDatas,
+      };
+      CreateParty(newDatas).then((data) => {
+        if (data && data?.status == "ok") {
+          handleCloseModal();
+          fetchData();
+        }
+      });
     } else {
-      toast.error("All fields are mandatory");
+      if (inputDatas.staticsID == "") {
+        toast.error("Statistic ID is mandatory");
+      } else {
+        toast.error("All fields are mandatory");
+      }
     }
   };
   const handleOnchange = (event) => {
@@ -60,8 +86,16 @@ export default function UserContainer({
           borderBottom: "1px solid #d4c9c9",
         }}
       >
-        <ExpenseCard amount="5000" condition="credit" type="statics" />
-        <ExpenseCard amount="4000" condition="debit" type="statics" />
+        <ExpenseCard
+          amount={staticsDetails?.totalcredit}
+          condition="CREDIT"
+          type="statics"
+        />
+        <ExpenseCard
+          amount={staticsDetails?.totaldebit}
+          condition="DEBIT"
+          type="statics"
+        />
       </Box>
       <Box
         sx={{
@@ -88,7 +122,7 @@ export default function UserContainer({
           width: "100%",
           height: Users.length > 0 ? "77%" : "87%",
           "&:hover": {
-            overflowY: "auto", // Show overflow when hovering over the side menu
+            overflowY: "auto",
           },
           "&::-webkit-scrollbar": {
             width: "8px",
@@ -143,38 +177,38 @@ export default function UserContainer({
           </Box>
         )}
       </Box>
-      {Users.length !== 0 && (
-        <Box
+
+      <Box
+        sx={{
+          height: "10%",
+          width: "100%",
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          flexDirection: "row",
+          padding: 2,
+          boxShadow: "0 -1px 0 0 #e3e3e3",
+          gap: 2,
+        }}
+      >
+        <Button
+          onClick={handleOpenModal}
+          variant="contained"
           sx={{
-            height: "10%",
-            width: "100%",
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            flexDirection: "row",
-            padding: 2,
-            boxShadow: "0 -1px 0 0 #e3e3e3",
-            gap: 2,
+            background: "blue",
+            color: "white",
+            fontWeight: "bold",
+            width: "40%",
+            "&:hover": {
+              backgroundColor: "#4646ed",
+            },
           }}
+          startIcon={<Add />}
         >
-          <Button
-            onClick={handleOpenModal}
-            variant="contained"
-            sx={{
-              background: "blue",
-              color: "white",
-              fontWeight: "bold",
-              width: "40%",
-              "&:hover": {
-                backgroundColor: "#4646ed",
-              },
-            }}
-            startIcon={<Add />}
-          >
-            {type == "CUSTOMER" ? " Add Customer" : "Add Supplier"}
-          </Button>
-        </Box>
-      )}
+          {type == "CUSTOMER" ? " Add Customer" : "Add Supplier"}
+        </Button>
+      </Box>
+
       <MyModal
         open={openModal}
         handleClose={handleCloseModal}

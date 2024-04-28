@@ -30,10 +30,10 @@ export default function MyModal({
 }) {
   const partyInputs = [
     {
-      name: "customername",
+      name: "partyname",
       label: "Party Name",
       onchange: handleOnchange,
-      value: data.customername,
+      value: data.partyname,
       type: "text",
       err: "",
       errMsg: "",
@@ -48,29 +48,29 @@ export default function MyModal({
       errMsg: "",
     },
 
-    {
-      name: "expensetype",
-      label: "",
-      onchange: handleOnchange,
-      value: data.expensetype ? data.expensetype : "CREDIT",
-      type: "multiInput",
-      err: "",
-      errMsg: "",
-      inputArr: [
-        {
-          name: "CREDIT",
-          label: "You Got",
-          value: "CREDIT",
-          color: "green",
-        },
-        {
-          name: "DEBIT",
-          label: "You Gave",
-          value: "DEBIT",
-          color: "red",
-        },
-      ],
-    },
+    // {
+    //   name: "expensetype",
+    //   label: "",
+    //   onchange: handleOnchange,
+    //   value: data.expensetype ? data.expensetype : "CREDIT",
+    //   type: "multiInput",
+    //   err: "",
+    //   errMsg: "",
+    //   inputArr: [
+    //     {
+    //       name: "CREDIT",
+    //       label: "You Got",
+    //       value: "CREDIT",
+    //       color: "green",
+    //     },
+    //     {
+    //       name: "DEBIT",
+    //       label: "You Gave",
+    //       value: "DEBIT",
+    //       color: "red",
+    //     },
+    //   ],
+    // },
     {
       name: "type",
       label: "who are they?",
@@ -206,8 +206,10 @@ export default function MyModal({
                             "& label.Mui-focused": {
                               color: "#5d5d5d",
                             },
-                            "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "gray",
+                            "& .MuiInputBase-root": {
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "gray !important",
+                              },
                             },
                             "& .MuiOutlinedInput-notchedOutline": {
                               borderRadius: "5px 0 0 5px",
@@ -231,8 +233,10 @@ export default function MyModal({
                             "& .MuiFormLabel-root label.Mui-focused": {
                               color: "#5d5d5d",
                             },
-                            "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "gray",
+                            "& .MuiInputBase-root": {
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "gray !important",
+                              },
                             },
                             "& .MuiOutlinedInput-notchedOutline": {
                               borderLeft: 0,
@@ -294,8 +298,10 @@ export default function MyModal({
                           "& label.Mui-focused": {
                             color: "#5d5d5d",
                           },
-                          "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "gray",
+                          "& .MuiInputBase-root": {
+                            "& .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "gray !important",
+                            },
                           },
                         }}
                       />
@@ -325,8 +331,10 @@ export default function MyModal({
                           "& label.Mui-focused": {
                             color: "#5d5d5d",
                           },
-                          "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "gray",
+                          "& .MuiInputBase-root": {
+                            "& .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "gray !important",
+                            },
                           },
                         }}
                       />
@@ -350,8 +358,10 @@ export default function MyModal({
                           "& label.Mui-focused": {
                             color: "#5d5d5d",
                           },
-                          "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "gray",
+                          "& .MuiInputBase-root": {
+                            "& .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "gray !important",
+                            },
                           },
                         }}
                       />
@@ -372,8 +382,10 @@ export default function MyModal({
                           "& label.Mui-focused": {
                             color: "#5d5d5d",
                           },
-                          "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "gray",
+                          "& .MuiInputBase-root": {
+                            "& .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "gray !important",
+                            },
                           },
                         }}
                       />
@@ -396,7 +408,7 @@ export default function MyModal({
               }}
             >
               {type == "party"
-                ? "Add customer"
+                ? "Add Party"
                 : type == "entry"
                 ? "Add Entry"
                 : ""}

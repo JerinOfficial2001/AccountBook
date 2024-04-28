@@ -23,7 +23,7 @@ function stringToColor(string) {
 }
 
 export const stringAvatar = (name) => {
-  const names = name.split(" ");
+  const names = name?.split(" ");
   let initials = "";
 
   if (names.length === 1) {
@@ -81,19 +81,19 @@ export default function CollectionCard({ data, handleClick }) {
       </Box>
       <Typography
         sx={{
-          color: data.expencetype == "credit" ? "green" : "black",
+          color: data.expensetype == "DEBIT" ? "red" : "black",
           fontWeight: "bold",
         }}
       >
-        {data.expencetype == "credit" ? `₹${data.amount}` : "-"}
+        {data.expensetype == "DEBIT" ? `₹${data.amount}` : "-"}
       </Typography>
       <Typography
         sx={{
-          color: data.expencetype == "debit" ? "red" : "black",
+          color: data.expensetype == "CREDIT" ? "green" : "black",
           fontWeight: "bold",
         }}
       >
-        {data.expencetype == "debit" ? `₹${data.amount}` : "-"}
+        {data.expensetype == "CREDIT" ? `₹${data.amount}` : "-"}
       </Typography>
     </Box>
   );

@@ -21,6 +21,9 @@ import MailIcon from "@mui/icons-material/Mail";
 import { Stack, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import TabContainer from "../components/HomePage/TabContainer";
+import { Logout } from "@mui/icons-material";
+import Cookies from "js-cookie";
+import { useRouter } from "next/router";
 
 const drawerWidth = 240;
 
@@ -90,6 +93,7 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function MiniDrawer({ children }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const handleDrawerClose = () => {
@@ -97,6 +101,10 @@ export default function MiniDrawer({ children }) {
   };
   const handleDrawerOpen = () => {
     setOpen(true);
+  };
+  const handleLogout = () => {
+    Cookies.remove("userData");
+    router.push("/auth/login");
   };
   return (
     <Box sx={{ display: "flex" }}>
@@ -185,9 +193,12 @@ export default function MiniDrawer({ children }) {
         </List>
         <Divider />
         <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
+          {["All mail", "Trash", "Logout"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
               <ListItemButton
+                onClick={() => {
+                  text == "Logout" ? handleLogout() : undefined;
+                }}
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? "initial" : "center",
@@ -201,7 +212,7 @@ export default function MiniDrawer({ children }) {
                     justifyContent: "center",
                   }}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {index % 2 === 0 ? <Logout /> : <MailIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>

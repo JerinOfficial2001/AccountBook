@@ -14,7 +14,7 @@ export default function ExpenseCard({ condition, type, amount }) {
         flexDirection:
           type == "statics" || type == "collection" ? "row" : "column-reverse",
         gap: 1,
-        color: condition == "credit" ? "green" : "red",
+        color: condition == "CREDIT" ? "green" : "red",
       }}
     >
       <Typography
@@ -24,7 +24,7 @@ export default function ExpenseCard({ condition, type, amount }) {
           fontSize: type !== "statics" ? "small" : "",
         }}
       >
-        {condition == "credit" ? "You'll Get" : "You'll Give"}
+        {condition == "DEBIT" ? "You'll Get" : "You'll Give"}
       </Typography>
       <Typography
         sx={{ color: type == "statics" ? "black" : "", fontWeight: "bold" }}
@@ -32,7 +32,7 @@ export default function ExpenseCard({ condition, type, amount }) {
         ₹{amount}
       </Typography>
       {type == "statics" ? (
-        condition == "credit" ? (
+        condition == "CREDIT" ? (
           <NorthEastRoundedIcon />
         ) : (
           <SouthWestRoundedIcon />

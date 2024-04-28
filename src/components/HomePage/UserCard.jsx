@@ -54,7 +54,7 @@ export default function UserCard({ data, handleClick, selectedParty }) {
         flexDirection: "row",
         paddingX: 5,
         color: "#5d5d5d",
-        background: selectedParty == data.customername ? "#cbcbcb45" : "",
+        background: selectedParty == data.partyname ? "#cbcbcb45" : "",
         "&:hover": {
           background: "#cbcbcb45",
         },
@@ -73,16 +73,16 @@ export default function UserCard({ data, handleClick, selectedParty }) {
           gap: 1,
         }}
       >
-        <Avatar {...stringAvatar(data?.customername)} />
+        <Avatar {...stringAvatar(data?.partyname)} />
         <Stack>
           <Typography sx={{ fontWeight: "bold", color: "black" }}>
-            {data?.customername}
+            {data?.partyname}
           </Typography>
           <Typography>{data?.date}</Typography>
         </Stack>
       </Box>
       <ExpenseCard
-        amount={data?.amount}
+        amount={data?.amount ? data?.amount : 0}
         condition={data?.expensetype}
         type="user"
       />

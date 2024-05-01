@@ -2,7 +2,6 @@ import { Box, Skeleton, Typography } from "@mui/material";
 import React from "react";
 import SouthWestRoundedIcon from "@mui/icons-material/SouthWestRounded";
 import NorthEastRoundedIcon from "@mui/icons-material/NorthEastRounded";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 export default function ExpenseCard({
   isLoading,
   isSelected,
@@ -49,16 +48,6 @@ export default function ExpenseCard({
           <SouthWestRoundedIcon />
         )
       ) : null}
-      {isSelected && (
-        <KeyboardArrowRightIcon
-          sx={{
-            color: "whitesmoke",
-            position: "absolute",
-            right: -35,
-            top: 10,
-          }}
-        />
-      )}
     </Box>
   );
 }

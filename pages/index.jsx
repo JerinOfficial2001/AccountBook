@@ -27,6 +27,13 @@ export default function Home() {
   const [isDetailLoading, setisDetailLoading] = useState(false);
   const cookie = getDecryptedCookie("userData");
   const cachedData = cookie ? JSON.parse(cookie) : false;
+  const [initiation, setinitiation] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setinitiation(false);
+    }, 3000);
+    () => clearTimeout(timer);
+  }, [cookie]);
   const fetchData = () => {
     setisLoading(true);
 
@@ -117,72 +124,105 @@ export default function Home() {
   ];
 
   return (
-    <MiniDrawer>
-      <Toaster position="top-center" />
-      <Stack
-        sx={{
-          width: { xs: "100%", sm: "100%", md: "60%", lg: "60%", xl: "60%" },
-        }}
-      >
-        <TabContainer
-          tabData={tabArr}
-          handleTabName={handleTabName}
-          tabName={tabName}
-        />
-      </Stack>
-      <Stack
-        sx={{
-          width: { xs: "100%", sm: "100%", md: "40%", lg: "40%", xl: "40%" },
-          maxHeight: "100vh",
-          justifyContent: "center",
-        }}
-      >
-        {PartyData ? (
-          <DetailsContainer
-            isLoading={isDetailLoading}
-            allCollections={allCollections}
-            cachedData={cachedData}
-            partyData={PartyData}
-            fetchData={fetchData}
-            fetchCollection={fetchCollection}
-          />
-        ) : (
+    <>
+      {initiation ? (
+        <Box
+          sx={{
+            height: "100vh",
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "#161616",
+          }}
+        >
           <Box
+            component="img"
+            src="/LoadingLogo.png"
+            sx={{ height: "150px", width: "150px" }}
+          />
+        </Box>
+      ) : (
+        <MiniDrawer>
+          <Toaster position="top-center" />
+          <Stack
             sx={{
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              flexDirection: "column",
+              width: {
+                xs: "100%",
+                sm: "100%",
+                md: "60%",
+                lg: "60%",
+                xl: "60%",
+              },
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                flexDirection: "column",
-                position: "relative",
-              }}
-            >
-              <GroupsRoundedIcon sx={{ color: "gray", fontSize: 200 }} />
-              <Typography
+            <TabContainer
+              tabData={tabArr}
+              handleTabName={handleTabName}
+              tabName={tabName}
+            />
+          </Stack>
+          <Stack
+            sx={{
+              width: {
+                xs: "100%",
+                sm: "100%",
+                md: "40%",
+                lg: "40%",
+                xl: "40%",
+              },
+              maxHeight: "100vh",
+              justifyContent: "center",
+            }}
+          >
+            {PartyData ? (
+              <DetailsContainer
+                isLoading={isDetailLoading}
+                allCollections={allCollections}
+                cachedData={cachedData}
+                partyData={PartyData}
+                fetchData={fetchData}
+                fetchCollection={fetchCollection}
+              />
+            ) : (
+              <Box
                 sx={{
-                  color: "gray",
-                  fontWeight: "bold",
-                  position: "absolute",
-                  bottom: 0,
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "column",
                 }}
               >
-                {tabName == "SUPPLIER"
-                  ? "No supplier selected"
-                  : "No customer selected"}
-              </Typography>
-            </Box>
-          </Box>
-        )}
-      </Stack>
-    </MiniDrawer>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: "column",
+                    position: "relative",
+                  }}
+                >
+                  <GroupsRoundedIcon sx={{ color: "gray", fontSize: 200 }} />
+                  <Typography
+                    sx={{
+                      color: "gray",
+                      fontWeight: "bold",
+                      position: "absolute",
+                      bottom: 0,
+                    }}
+                  >
+                    {tabName == "SUPPLIER"
+                      ? "No supplier selected"
+                      : "No customer selected"}
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+          </Stack>
+        </MiniDrawer>
+      )}
+    </>
   );
 }

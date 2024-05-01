@@ -53,12 +53,13 @@ export default function UserCard({ data, handleClick, selectedParty }) {
         alignItems: "center",
         flexDirection: "row",
         paddingX: 5,
-        // background: selectedParty == data.partyname ? "#4a4a4a45" : "",
+        background: selectedParty == data.partyname ? "#6dccdd38" : "",
         "&:hover": {
           background: "#4a4a4a45",
         },
         cursor: "pointer",
         transition: ".3s",
+        borderRight: selectedParty == data.partyname ? "5px solid #6DCCDD" : "",
       }}
       onClick={() => {
         handleClick(data._id);
@@ -81,7 +82,6 @@ export default function UserCard({ data, handleClick, selectedParty }) {
         </Stack>
       </Box>
       <ExpenseCard
-        isSelected={selectedParty == data.partyname}
         amount={data?.amount ? data?.amount : 0}
         condition={data?.expensetype}
         type="user"

@@ -17,6 +17,21 @@ export const GetPartyByStaticsID = async (formData) => {
     console.log(error, "GetStaticsErr");
   }
 };
+export const GetInitPartyID = async (formData) => {
+  try {
+    const data = await getApi(
+      `${PARTY_API}/getinit/${formData.id}?userid=${formData.userID}`,
+      formData.token
+    );
+    if (data.status == "ok") {
+      return data.data;
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+    console.log(error, "GetStaticsErr");
+  }
+};
 export const CreateParty = async (formDatas) => {
   try {
     const data = await postApi(

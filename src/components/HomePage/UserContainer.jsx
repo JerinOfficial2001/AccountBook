@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, Skeleton, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import ExpenseCard from "./ExpenseCard";
 import UserCard from "./UserCard";
@@ -16,8 +16,10 @@ export default function UserContainer({
   staticsDetails,
   cachedData,
   fetchData,
+  isLoading,
 }) {
   const [openModal, setopenModal] = useState(false);
+  const [isProcessing, setisProcessing] = useState(false);
   const [inputDatas, setinputDatas] = useState({
     modelTitle: "Add New Party",
     partyname: "",
@@ -43,6 +45,7 @@ export default function UserContainer({
   }, []);
 
   const handleSubmit = (e) => {
+    setisProcessing(true);
     e.preventDefault();
     const keys = Object.keys(inputDatas);
     const requiredFields = keys.every((key) => inputDatas[key] !== "");
@@ -56,13 +59,18 @@ export default function UserContainer({
         if (data && data?.status == "ok") {
           handleCloseModal();
           fetchData();
+          setisProcessing(false);
+        } else {
+          setisProcessing(false);
         }
       });
     } else {
       if (inputDatas.staticsID == "") {
         toast.error("Statistic ID is mandatory");
+        setisProcessing(false);
       } else {
         toast.error("All fields are mandatory");
+        setisProcessing(false);
       }
     }
   };
@@ -83,18 +91,20 @@ export default function UserContainer({
           alignItems: "center",
           flexDirection: "row",
           padding: 1,
-          borderBottom: "1px solid #d4c9c9",
+          borderBottom: "1px solid #686868",
         }}
       >
         <ExpenseCard
           amount={staticsDetails?.totalcredit}
           condition="CREDIT"
           type="statics"
+          isLoading={isLoading}
         />
         <ExpenseCard
           amount={staticsDetails?.totaldebit}
           condition="DEBIT"
           type="statics"
+          isLoading={isLoading}
         />
       </Box>
       <Box
@@ -106,8 +116,8 @@ export default function UserContainer({
           alignItems: "center",
           flexDirection: "row",
           paddingX: 5,
-          background: "#bfbfbf",
-          color: "#5d5d5d",
+          background: "#272727",
+          color: "#ffffff99",
         }}
       >
         <Typography sx={{ fontWeight: "bold", textTransform: "uppercase" }}>
@@ -140,7 +150,55 @@ export default function UserContainer({
           },
         }}
       >
-        {Users.length > 0 ? (
+        {isLoading ? (
+          [1, 2, 3].map((elem) => (
+            <Box
+              key={elem}
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                height: "100px",
+                flexDirection: "row",
+                paddingX: 4,
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "row",
+                  gap: 1,
+                }}
+              >
+                <Skeleton
+                  variant="circular"
+                  sx={{
+                    height: "50px",
+                    width: "50px",
+                    background: "#6264669c",
+                  }}
+                />
+                <Skeleton sx={{ width: "100px", background: "#6264669c" }} />
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "column",
+                  gap: 1,
+                }}
+              >
+                {" "}
+                <Skeleton sx={{ width: "100px", background: "#6264669c" }} />
+                <Skeleton sx={{ width: "100px", background: "#6264669c" }} />
+              </Box>
+            </Box>
+          ))
+        ) : Users.length > 0 ? (
           Users.map((data, index) => (
             <UserCard
               selectedParty={selectedParty}
@@ -168,7 +226,7 @@ export default function UserContainer({
             />
             <Typography
               sx={{
-                color: "black",
+                color: "gray",
                 fontWeight: "bold",
               }}
             >
@@ -187,21 +245,22 @@ export default function UserContainer({
           alignItems: "center",
           flexDirection: "row",
           padding: 2,
-          boxShadow: "0 -1px 0 0 #e3e3e3",
+          boxShadow: "0 -1px 0 0 #686868",
           gap: 2,
         }}
       >
         <Button
-          onClick={handleOpenModal}
+          onClick={isLoading ? undefined : handleOpenModal}
           variant="contained"
           sx={{
-            background: "blue",
+            background: "#1f1f9d",
             color: "white",
             fontWeight: "bold",
             width: { xs: "100%", sm: "100%", md: "40%", lg: "40%", xl: "40%" },
             "&:hover": {
               backgroundColor: "#4646ed",
             },
+            cursor: isLoading ? "not-allowed" : "pointer",
           }}
           startIcon={<Add />}
         >
@@ -210,6 +269,7 @@ export default function UserContainer({
       </Box>
 
       <MyModal
+        isProcessing={isProcessing}
         open={openModal}
         handleClose={handleCloseModal}
         data={inputDatas}

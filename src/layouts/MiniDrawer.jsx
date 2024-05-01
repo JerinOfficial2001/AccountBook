@@ -18,7 +18,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
-import { Stack, Tab } from "@mui/material";
+import { Stack, Tab, useMediaQuery } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import TabContainer from "../components/HomePage/TabContainer";
 import { Logout } from "@mui/icons-material";
@@ -94,8 +94,16 @@ const Drawer = styled(MuiDrawer, {
 
 export default function MiniDrawer({ children }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+
   const theme = useTheme();
+
+  const isxs = useMediaQuery(theme.breakpoints.only("xs"));
+  const issm = useMediaQuery(theme.breakpoints.only("sm"));
+  const isMd = useMediaQuery(theme.breakpoints.only("md"));
+  const isLg = useMediaQuery(theme.breakpoints.only("lg"));
+  const isXl = useMediaQuery(theme.breakpoints.only("xl"));
+
+  const [open, setOpen] = useState(false);
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -106,120 +114,295 @@ export default function MiniDrawer({ children }) {
     Cookies.remove("userData");
     router.push("/auth/login");
   };
-  return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-
-      <Drawer
-        variant="permanent"
-        open={open}
-        sx={{
-          "& .MuiPaper-root:hover": {
-            overflowY: "auto",
-          },
-          "& .MuiPaper-root": {
-            overflow: "hidden",
-            "&::-webkit-scrollbar": {
-              width: open ? "8px" : "3px",
-            },
-            "&::-webkit-scrollbar-track": {
-              background: "#f5f5f5",
-              borderRadius: "4px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              background: "#bdbdbd",
-              borderRadius: "4px",
-              "&:hover": {
-                background: "#a5a5a5",
-              },
-            },
-          },
-        }}
-      >
-        {open ? (
-          <DrawerHeader>
-            Hello
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === "rtl" ? (
-                <ChevronRightIcon />
-              ) : (
-                <ChevronLeftIcon />
-              )}
-            </IconButton>
-          </DrawerHeader>
-        ) : (
-          <DrawerHeader
+  const DrawerList = (
+    <Box sx={{ width: 250 }} role="presentation" onClick={handleDrawerClose}>
+      <List>
+        <DrawerHeader
+          sx={{
+            position: "sticky",
+            top: 0,
+            zIndex: 1,
+            background: "#262626",
+            borderBottom: "2px solid #686868",
+          }}
+        >
+          <Typography
             sx={{
-              justifyContent: "center",
+              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              color: "#6DCCDD",
             }}
           >
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
+            <Box component="img" src="/LOGO.png" sx={{ height: "30px" }} />
+            ACCOUNT BOOK
+          </Typography>
+          <IconButton
+            sx={{
+              color: "#f2eeee",
+            }}
+            onClick={handleDrawerClose}
+          >
+            {theme.direction === "rtl" ? (
+              <ChevronRightIcon />
+            ) : (
+              <ChevronLeftIcon />
+            )}
+          </IconButton>
+        </DrawerHeader>
+
+        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+          <ListItem key={text} disablePadding sx={{ display: "block" }}>
+            <ListItemButton
               sx={{
-                ...(open && { display: "none" }),
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
               }}
             >
-              <MenuIcon />
-            </IconButton>
-          </DrawerHeader>
-        )}
-        <Divider />
-        <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                  color: "#f2eeee",
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {["All mail", "Trash", "Logout"].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                onClick={() => {
-                  text == "Logout" ? handleLogout() : undefined;
-                }}
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+      <Divider sx={{ borderColor: "#686868" }} />
+      <List>
+        {["All mail", "Trash", "Logout"].map((text, index) => (
+          <ListItem key={text} disablePadding sx={{ display: "block" }}>
+            <ListItemButton
+              onClick={() => {
+                text == "Logout" ? handleLogout() : undefined;
+              }}
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                  color: "#f2eeee",
+                  color: "#f2eeee",
                 }}
               >
-                <ListItemIcon
+                {index % 2 === 0 ? <Logout /> : <MailIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
+  return (
+    <Box sx={{ display: "flex", position: "relative" }}>
+      <CssBaseline />
+      <IconButton
+        aria-label="open drawer"
+        onClick={handleDrawerOpen}
+        edge="start"
+        sx={{
+          ...((isXl || isLg || isMd || open) && { display: "none" }),
+          position: "absolute",
+          left: 20,
+          top: 10,
+          zIndex: 2,
+          color: "whitesmoke",
+        }}
+      >
+        <MenuIcon />
+      </IconButton>
+      {isXl || isLg || isMd ? (
+        <Drawer
+          variant={"permanent"}
+          open={open}
+          sx={{
+            "& .MuiPaper-root:hover": {
+              overflowY: "auto",
+            },
+            "& .MuiPaper-root": {
+              background: "#262626",
+              color: "#f2eeee",
+              overflow: "hidden",
+              "&::-webkit-scrollbar": {
+                width: open ? "8px" : "3px",
+              },
+              "&::-webkit-scrollbar-track": {
+                background: "#f5f5f5",
+                borderRadius: "4px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                background: "#bdbdbd",
+                borderRadius: "4px",
+                "&:hover": {
+                  background: "#a5a5a5",
+                },
+              },
+            },
+          }}
+          onClose={handleDrawerClose}
+        >
+          {open ? (
+            <DrawerHeader
+              sx={{
+                position: "sticky",
+                top: 0,
+                zIndex: 1,
+                background: "#262626",
+                borderBottom: "2px solid #686868",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontWeight: "bold",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                  color: "#6DCCDD",
+                }}
+              >
+                <Box component="img" src="/LOGO.png" sx={{ height: "30px" }} />
+                ACCOUNT BOOK
+              </Typography>
+              <IconButton
+                sx={{
+                  color: "#f2eeee",
+                }}
+                onClick={handleDrawerClose}
+              >
+                {theme.direction === "rtl" ? (
+                  <ChevronRightIcon />
+                ) : (
+                  <ChevronLeftIcon />
+                )}
+              </IconButton>
+            </DrawerHeader>
+          ) : (
+            <DrawerHeader
+              sx={{
+                justifyContent: "center",
+                position: "sticky",
+                top: 0,
+                zIndex: 1,
+                background: "#262626",
+                borderBottom: "2px solid #686868",
+              }}
+            >
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                edge="start"
+                sx={{
+                  ...(open && { display: "none" }),
+                  margin: 0,
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+            </DrawerHeader>
+          )}
+          <List>
+            {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+              <ListItem key={text} disablePadding sx={{ display: "block" }}>
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
                   }}
                 >
-                  {index % 2 === 0 ? <Logout /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                      color: "#f2eeee",
+                    }}
+                  >
+                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          <Divider sx={{ borderColor: "#686868" }} />
+          <List>
+            {["All mail", "Trash", "Logout"].map((text, index) => (
+              <ListItem key={text} disablePadding sx={{ display: "block" }}>
+                <ListItemButton
+                  onClick={() => {
+                    text == "Logout" ? handleLogout() : undefined;
+                  }}
+                  sx={{
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      color: "#f2eeee",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {index % 2 === 0 ? <Logout /> : <MailIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Drawer>
+      ) : (
+        <MuiDrawer
+          sx={{
+            "& .MuiPaper-root:hover": {
+              overflowY: "auto",
+            },
+            "& .MuiPaper-root": {
+              background: "#262626",
+              color: "#f2eeee",
+              overflow: "hidden",
+              "&::-webkit-scrollbar": {
+                width: open ? "8px" : "3px",
+              },
+              "&::-webkit-scrollbar-track": {
+                background: "#f5f5f5",
+                borderRadius: "4px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                background: "#bdbdbd",
+                borderRadius: "4px",
+                "&:hover": {
+                  background: "#a5a5a5",
+                },
+              },
+            },
+          }}
+          open={open}
+          onClose={handleDrawerClose}
+        >
+          {DrawerList}
+        </MuiDrawer>
+      )}
       <Box
         component="main"
         sx={{
@@ -234,6 +417,8 @@ export default function MiniDrawer({ children }) {
             xl: "row",
           },
           alignItems: "center",
+          background: "#020202d1",
+          height: issm || isxs ? "100%" : "100vh",
         }}
       >
         {children}

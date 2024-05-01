@@ -12,7 +12,7 @@ import DetailsContainer from "@/src/components/HomePage/DetailsContainer";
 import { Toaster } from "react-hot-toast";
 import { GetStaticsByType } from "@/src/controllers/statics";
 import { getDecryptedCookie } from "@/src/utils/EncryptCookie";
-import { GetPartyByStaticsID } from "@/src/controllers/party";
+import { GetInitPartyID, GetPartyByStaticsID } from "@/src/controllers/party";
 import { GetCollectionByPartyID } from "@/src/controllers/collections";
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,9 +23,13 @@ export default function Home() {
   const [staticsDetails, setstaticsDetails] = useState(null);
   const [allParties, setallParties] = useState([]);
   const [allCollections, setallCollections] = useState([]);
+  const [isLoading, setisLoading] = useState(false);
+  const [isDetailLoading, setisDetailLoading] = useState(false);
   const cookie = getDecryptedCookie("userData");
   const cachedData = cookie ? JSON.parse(cookie) : false;
   const fetchData = () => {
+    setisLoading(true);
+
     if (cachedData) {
       GetStaticsByType({
         id: cachedData._id,
@@ -39,6 +43,7 @@ export default function Home() {
           token: cachedData.accessToken,
         }).then((data) => {
           setallParties(data);
+          setisLoading(false);
         });
       });
     }
@@ -52,18 +57,27 @@ export default function Home() {
       userID: cachedData._id,
       token: cachedData.accessToken,
     }).then((data) => {
+      GetInitPartyID({
+        id,
+        userID: cachedData._id,
+        token: cachedData.accessToken,
+      }).then((data) => {
+        if (data) {
+          setPartyData(data);
+          setselectedParty(data.partyname);
+        }
+      });
       setallCollections(data);
+      setisDetailLoading(false);
     });
   };
   const handleTabName = (e, name) => {
     settabName(name);
+    setPartyData(null);
+    setselectedParty("");
   };
   const handleOpenUserDetail = (id) => {
-    const particularPartyData = allParties.find((item) => item._id == id);
-    if (particularPartyData) {
-      setPartyData(particularPartyData);
-      setselectedParty(particularPartyData.partyname);
-    }
+    setisDetailLoading(true);
     fetchCollection(id);
   };
 
@@ -73,6 +87,7 @@ export default function Home() {
       value: "CUSTOMER",
       content: (
         <UserContainer
+          isLoading={isLoading}
           type="CUSTOMER"
           handleClick={handleOpenUserDetail}
           Users={allParties}
@@ -88,6 +103,7 @@ export default function Home() {
       value: "SUPPLIER",
       content: (
         <UserContainer
+          isLoading={isLoading}
           type="SUPPLIER"
           Users={allParties}
           handleClick={handleOpenUserDetail}
@@ -123,6 +139,7 @@ export default function Home() {
       >
         {PartyData ? (
           <DetailsContainer
+            isLoading={isDetailLoading}
             allCollections={allCollections}
             cachedData={cachedData}
             partyData={PartyData}
@@ -152,7 +169,7 @@ export default function Home() {
               <GroupsRoundedIcon sx={{ color: "gray", fontSize: 200 }} />
               <Typography
                 sx={{
-                  color: "black",
+                  color: "gray",
                   fontWeight: "bold",
                   position: "absolute",
                   bottom: 0,

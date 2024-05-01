@@ -3,21 +3,28 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { IconButton, MenuItem, Stack, TextField } from "@mui/material";
-import { Close } from "@mui/icons-material";
+import { Avatar, IconButton, MenuItem, Stack, TextField } from "@mui/material";
+import { Close, Delete } from "@mui/icons-material";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
-
+import RefreshIcon from "@mui/icons-material/Refresh";
+import { stringAvatar } from "./CollectionCard";
+import KeyboardArrowLeftTwoToneIcon from "@mui/icons-material/KeyboardArrowLeftTwoTone";
+import BorderColorTwoToneIcon from "@mui/icons-material/BorderColorTwoTone";
+import NorthEastRoundedIcon from "@mui/icons-material/NorthEastRounded";
+import SouthWestRoundedIcon from "@mui/icons-material/SouthWestRounded";
+import SubjectIcon from "@mui/icons-material/Subject";
+import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 const style = {
   width: 400,
-  bgcolor: "background.paper",
+  bgcolor: "#262626",
   boxShadow: 24,
   float: "right",
   height: "100%",
-  color: "#5d5d5d",
+  color: "whitesmoke",
 };
 
 export default function MyModal({
@@ -27,6 +34,9 @@ export default function MyModal({
   data,
   handleOnchange,
   handleSubmit,
+  isProcessing,
+  partyData,
+  handleFormData,
 }) {
   const partyInputs = [
     {
@@ -124,6 +134,7 @@ export default function MyModal({
       errMsg: "",
     },
   ];
+
   return (
     <div>
       <Modal
@@ -155,17 +166,42 @@ export default function MyModal({
                     : data.expensetype == "DEBIT"
                     ? "red"
                     : "",
+                display: "flex",
+                alignItems: "center",
               }}
             >
+              {data.modelTitle == "Edit Entry" && (
+                <IconButton
+                  onClick={() => {
+                    handleFormData("modelTitle", "Entry Details");
+                  }}
+                  sx={{
+                    color:
+                      data.expensetype == "CREDIT"
+                        ? "green"
+                        : data.expensetype == "DEBIT"
+                        ? "red"
+                        : "",
+                  }}
+                >
+                  <KeyboardArrowLeftTwoToneIcon />
+                </IconButton>
+              )}
               {data?.modelTitle}
             </Typography>
-            <IconButton onClick={handleClose}>
+            <IconButton sx={{ color: "whitesmoke" }} onClick={handleClose}>
               <Close />
             </IconButton>
           </Box>
           <Box
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={
+              data.modelTitle == "Entry Details"
+                ? (e) => {
+                    handleSubmit(e, data.partyID);
+                  }
+                : handleSubmit
+            }
             sx={{
               height: "90%",
               width: "100%",
@@ -260,8 +296,11 @@ export default function MyModal({
                     );
                   } else if (inputData.type == "radio") {
                     return (
-                      <FormControl key={index}>
-                        <FormLabel id="demo-row-radio-buttons-group-label">
+                      <FormControl sx={{ color: "#ffffff99" }} key={index}>
+                        <FormLabel
+                          sx={{ color: "#ffffff99" }}
+                          id="demo-row-radio-buttons-group-label"
+                        >
                           {inputData.label}
                         </FormLabel>
                         <RadioGroup
@@ -293,15 +332,16 @@ export default function MyModal({
                         onChange={inputData.onchange}
                         sx={{
                           "& .MuiFormLabel-root": {
-                            color: "#5d5d5d",
+                            color: "#ffffff99",
                           },
                           "& label.Mui-focused": {
-                            color: "#5d5d5d",
+                            color: "#ffffff99",
                           },
                           "& .MuiInputBase-root": {
                             "& .MuiOutlinedInput-notchedOutline": {
                               borderColor: "gray !important",
                             },
+                            color: "whitesmoke",
                           },
                         }}
                       />
@@ -309,7 +349,8 @@ export default function MyModal({
                   }
                 })}
               </Stack>
-            ) : type == "entry" ? (
+            ) : data.modelTitle == "Add Entry" ||
+              data.modelTitle == "Edit Entry" ? (
               <Stack gap={2}>
                 {entryInputs.map((inputData, index) => {
                   if (inputData.type == "multiline") {
@@ -326,15 +367,16 @@ export default function MyModal({
                         placeholder={inputData.placeholder}
                         sx={{
                           "& .MuiFormLabel-root": {
-                            color: "#5d5d5d",
+                            color: "#ffffff99",
                           },
                           "& label.Mui-focused": {
-                            color: "#5d5d5d",
+                            color: "#ffffff99",
                           },
                           "& .MuiInputBase-root": {
                             "& .MuiOutlinedInput-notchedOutline": {
                               borderColor: "gray !important",
                             },
+                            color: "whitesmoke",
                           },
                         }}
                       />
@@ -353,15 +395,16 @@ export default function MyModal({
                         }}
                         sx={{
                           "& .MuiFormLabel-root": {
-                            color: "#5d5d5d",
+                            color: "#ffffff99",
                           },
                           "& label.Mui-focused": {
-                            color: "#5d5d5d",
+                            color: "#ffffff99",
                           },
                           "& .MuiInputBase-root": {
                             "& .MuiOutlinedInput-notchedOutline": {
                               borderColor: "gray !important",
                             },
+                            color: "whitesmoke",
                           },
                         }}
                       />
@@ -377,15 +420,16 @@ export default function MyModal({
                         onChange={inputData.onchange}
                         sx={{
                           "& .MuiFormLabel-root": {
-                            color: "#5d5d5d",
+                            color: "#ffffff99",
                           },
                           "& label.Mui-focused": {
-                            color: "#5d5d5d",
+                            color: "#ffffff99",
                           },
                           "& .MuiInputBase-root": {
                             "& .MuiOutlinedInput-notchedOutline": {
                               borderColor: "gray !important",
                             },
+                            color: "whitesmoke",
                           },
                         }}
                       />
@@ -393,26 +437,185 @@ export default function MyModal({
                   }
                 })}
               </Stack>
+            ) : data.modelTitle == "Entry Details" ? (
+              <Stack gap={2}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                    gap: 1,
+                    color: "slategray",
+                  }}
+                >
+                  <Avatar {...stringAvatar(partyData?.partyname)} />
+                  <Stack>
+                    <Typography sx={{ fontWeight: "bold", color: "white" }}>
+                      {partyData?.partyname}
+                    </Typography>
+                    <Typography>{partyData?.phone}</Typography>
+                  </Stack>
+                </Box>
+                <Button
+                  onClick={() => {
+                    handleFormData("modelTitle", "Edit Entry");
+                  }}
+                  sx={{
+                    width: "80%",
+                    color: "#ffffff99",
+                    borderColor: "gray",
+                    "&:hover": {
+                      borderColor: "gray",
+                    },
+                  }}
+                  variant="outlined"
+                  startIcon={<BorderColorTwoToneIcon />}
+                >
+                  Edit Entry
+                </Button>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                    gap: 1,
+                    color: "slategray",
+                  }}
+                >
+                  {data.expensetype == "DEBIT" ? (
+                    <SouthWestRoundedIcon sx={{ color: "red" }} />
+                  ) : (
+                    <NorthEastRoundedIcon
+                      sx={{
+                        color: "green",
+                      }}
+                    />
+                  )}
+                  <Stack>
+                    <Typography
+                      sx={{
+                        color: "lightcyan",
+                      }}
+                    >
+                      {data.expensetype == "DEBIT" ? "You Gave" : "You Got"}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        color: data.expensetype == "DEBIT" ? "red" : "green",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      ₹ {data?.amount}
+                    </Typography>
+                  </Stack>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                    gap: 1,
+                    color: "slategray",
+                  }}
+                >
+                  <SubjectIcon />
+                  <Stack>
+                    <Typography
+                      sx={{
+                        color: "lightcyan",
+                      }}
+                    >
+                      Description
+                    </Typography>
+                    <Typography>
+                      {data?.details ? data?.details : "-"}
+                    </Typography>
+                  </Stack>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                    gap: 1,
+                    color: "slategray",
+                  }}
+                >
+                  <CurrencyRupeeIcon
+                    sx={{ border: "2px solid slategray", borderRadius: "50%" }}
+                  />
+                  <Stack>
+                    <Typography
+                      sx={{
+                        color: "lightcyan",
+                      }}
+                    >
+                      Running Balance
+                    </Typography>
+                    <Typography
+                      sx={{
+                        color:
+                          partyData.expensetype == "DEBIT" ? "red" : "green",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      ₹ {partyData?.amount}
+                    </Typography>
+                  </Stack>
+                </Box>
+              </Stack>
             ) : null}
-            <Button
-              type="submit"
-              variant="contained"
+            <Box
               sx={{
-                background: "blue",
-                color: "white",
-                fontWeight: "bold",
                 width: "100%",
-                "&:hover": {
-                  backgroundColor: "#4646ed",
-                },
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              {type == "party"
-                ? "Add Party"
-                : type == "entry"
-                ? "Add Entry"
-                : ""}
-            </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                startIcon={
+                  data.modelTitle == "Entry Details" && !isProcessing ? (
+                    <Delete />
+                  ) : (
+                    ""
+                  )
+                }
+                sx={{
+                  borderRadius: "20px",
+                  background:
+                    data.modelTitle == "Entry Details" ? "red" : "#1f1f9d",
+                  color: "white",
+                  fontWeight: "bold",
+                  width: isProcessing ? "37px !important" : "100%",
+                  "&:hover": {
+                    backgroundColor:
+                      data.modelTitle == "Entry Details"
+                        ? "#de5d5d"
+                        : "#4646ed",
+                  },
+                  minWidth: "unset",
+                }}
+              >
+                {isProcessing ? (
+                  <RefreshIcon className="loadingBtn" />
+                ) : type == "party" ? (
+                  "Add Party"
+                ) : type == "entry" ? (
+                  data.modelTitle == "Entry Details" ? (
+                    "Delete"
+                  ) : data.modelTitle == "Edit Entry" ? (
+                    "Edit Entry"
+                  ) : (
+                    "Add Entry"
+                  )
+                ) : (
+                  ""
+                )}
+              </Button>
+            </Box>
           </Box>
         </Box>
       </Modal>

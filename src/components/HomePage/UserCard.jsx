@@ -53,10 +53,9 @@ export default function UserCard({ data, handleClick, selectedParty }) {
         alignItems: "center",
         flexDirection: "row",
         paddingX: 5,
-        color: "#5d5d5d",
-        background: selectedParty == data.partyname ? "#cbcbcb45" : "",
+        // background: selectedParty == data.partyname ? "#4a4a4a45" : "",
         "&:hover": {
-          background: "#cbcbcb45",
+          background: "#4a4a4a45",
         },
         cursor: "pointer",
         transition: ".3s",
@@ -75,13 +74,14 @@ export default function UserCard({ data, handleClick, selectedParty }) {
       >
         <Avatar {...stringAvatar(data?.partyname)} />
         <Stack>
-          <Typography sx={{ fontWeight: "bold", color: "black" }}>
+          <Typography sx={{ fontWeight: "bold", color: "whitesmoke" }}>
             {data?.partyname}
           </Typography>
           <Typography>{data?.date}</Typography>
         </Stack>
       </Box>
       <ExpenseCard
+        isSelected={selectedParty == data.partyname}
         amount={data?.amount ? data?.amount : 0}
         condition={data?.expensetype}
         type="user"

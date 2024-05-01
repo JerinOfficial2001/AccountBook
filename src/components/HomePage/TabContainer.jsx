@@ -10,12 +10,11 @@ export default function TabContainer({ tabName, handleTabName, tabData }) {
         onChange={handleTabName}
         aria-label="simple tabs 
                         example"
-        TabIndicatorProps={{ style: { backgroundColor: "#015578" } }}
+        TabIndicatorProps={{ style: { backgroundColor: "#009b07" } }}
         sx={{
-          background: "#E3E3E3",
+          background: "#3b3b3b",
           "& .MuiTab-root.Mui-selected": {
-            color: "#015578",
-            // backgroundColor: "#e1f3f6",
+            color: "#6DCCDD",
             fontWeight: "550",
             height: "65px",
           },
@@ -25,6 +24,9 @@ export default function TabContainer({ tabName, handleTabName, tabData }) {
           "*::-webkit-scrollbar": {
             width: "0px",
             height: "0px",
+          },
+          "& .MuiTab-root": {
+            color: "#ffffff99",
           },
         }}
       >
@@ -53,9 +55,8 @@ export default function TabContainer({ tabName, handleTabName, tabData }) {
           key={index}
           sx={{
             p: 0,
-            borderTop: "1px solid #d4c9c9",
-            borderRight: "1px solid #d4c9c9",
-            minHeight: "90vh",
+            borderRight: "1px solid #686868",
+            minHeight: "100%",
           }}
         >
           {elem.content}

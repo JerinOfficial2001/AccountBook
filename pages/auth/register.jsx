@@ -1,14 +1,18 @@
-import { LoginController, UserDataController } from "@/src/controllers/auth";
+import { RegisterController, UserDataController } from "@/src/controllers/auth";
 import AuthLayout from "@/src/layouts/AuthLayout";
 import { setEncryptedCookie } from "@/src/utils/EncryptCookie";
 import { TextField, Typography } from "@mui/material";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
-export default function Login() {
+export default function Register() {
+  const router = useRouter();
   const [inputDatas, setinputDatas] = useState({
     phone: "",
     password: "",
+    shopname: "",
+    username: "",
   });
   const [isProcessing, setisProcessing] = useState(false);
 
@@ -17,6 +21,24 @@ export default function Login() {
     setinputDatas((prev) => ({ ...prev, [name]: value }));
   };
   const authInput = [
+    {
+      name: "username",
+      label: "Name",
+      onchange: handleOnchange,
+      value: inputDatas.username,
+      type: "text",
+      err: "",
+      errMsg: "",
+    },
+    {
+      name: "shopname",
+      label: "Shop name",
+      onchange: handleOnchange,
+      value: inputDatas.shopname,
+      type: "text",
+      err: "",
+      errMsg: "",
+    },
     {
       name: "phone",
       label: "Phone Number",
@@ -42,22 +64,30 @@ export default function Login() {
     const keys = Object.keys(inputDatas);
     const required = keys.every((key) => inputDatas[key] !== "");
     if (required) {
-      LoginController(inputDatas).then((data) => {
-        if (data && data?.status == "ok") {
-          UserDataController(data.token).then((res) => {
-            if (res.status == "ok") {
-              setEncryptedCookie("userData", JSON.stringify(res.data));
-              toast.success("Logged in successfully");
-              window.location.href = "/";
-              setisProcessing(false);
+      RegisterController(inputDatas).then((data) => {
+        if (data) {
+          if (data.status == "ok") {
+            if (data.token) {
+              UserDataController(data.token).then((res) => {
+                if (res.status == "ok") {
+                  setEncryptedCookie("userData", JSON.stringify(res.data));
+                  toast.success("Logged in successfully");
+                  window.location.href = "/";
+                  setisProcessing(false);
+                } else {
+                  setisProcessing(false);
+                  toast.error(res.message);
+                }
+              });
             } else {
-              setisProcessing(false);
-              toast.error(res.message);
+              toast.success(data.message);
+              router.push("/auth/login");
             }
-          });
-        } else {
-          setisProcessing(false);
-          toast.error(data?.message);
+            setisProcessing(false);
+          } else {
+            toast.error(data.message);
+            setisProcessing(false);
+          }
         }
       });
     } else {
@@ -69,8 +99,8 @@ export default function Login() {
     <AuthLayout
       handleSubmit={handleSubmit}
       isProcessing={isProcessing}
-      isLogin={true}
-      routeHandler="/auth/register"
+      isLogin={false}
+      routeHandler="/auth/login"
     >
       <Typography
         id="keep-mounted-modal-title"
@@ -81,7 +111,7 @@ export default function Login() {
           textTransform: "uppercase",
         }}
       >
-        Login
+        Sign Up
       </Typography>
       {authInput.map((inputData, index) => (
         <TextField

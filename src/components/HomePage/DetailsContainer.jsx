@@ -1,10 +1,21 @@
-import { Avatar, Box, Button, Stack, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  Skeleton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import ExpenseCard from "./ExpenseCard";
 import CollectionCard, { stringAvatar } from "./CollectionCard";
 import MyModal from "./MyModal";
 import toast from "react-hot-toast";
-import { CreateCollection } from "@/src/controllers/collections";
+import {
+  CreateCollection,
+  DeleteCollection,
+  GetInitCollection,
+} from "@/src/controllers/collections";
 
 export default function DetailsContainer({
   cachedData,
@@ -12,8 +23,10 @@ export default function DetailsContainer({
   fetchData,
   allCollections,
   fetchCollection,
+  isLoading,
 }) {
   const [openModal, setopenModal] = useState(false);
+  const [isProcessing, setisProcessing] = useState(false);
   const [inputDatas, setinputDatas] = useState({
     modelTitle: "Add Entry",
     details: "",
@@ -28,44 +41,106 @@ export default function DetailsContainer({
   };
   const handleCloseModal = () => {
     setopenModal(false);
+    setisProcessing(false);
   };
   const handleOpenModal = (type) => {
     setopenModal(true);
     handleFormData("expensetype", type);
+    handleFormData("modelTitle", "Add Entry");
   };
   useEffect(() => {
     if (partyData) {
       handleFormData("partyID", partyData._id);
     }
   }, [partyData]);
-  const handleSubmit = (e) => {
+  const handleSubmit = (e, id) => {
+    setisProcessing(true);
     e.preventDefault();
     const keys = Object.keys(inputDatas);
-    const requiredFields = keys.every((key) => inputDatas[key] !== "");
-    if (requiredFields && partyData && partyData?._id) {
+    if (
+      inputDatas.modelTitle == "Add Entry"
+      // ||
+      // inputDatas.modelTitle == "Edit Entry"
+    ) {
+      const requiredFields = keys.every((key) => {
+        if (key === "details") {
+          return true;
+        }
+        return inputDatas[key] !== "";
+      });
+
+      if (requiredFields && partyData && partyData?._id) {
+        const newDatas = {
+          userID: cachedData._id,
+          token: cachedData.accessToken,
+          data: inputDatas,
+        };
+        CreateCollection(newDatas).then((data) => {
+          if (data?.status == "ok") {
+            handleCloseModal();
+            fetchData();
+            fetchCollection(partyData?._id);
+            setisProcessing(false);
+          } else {
+            setisProcessing(false);
+          }
+        });
+      } else {
+        setisProcessing(false);
+        if (inputDatas.partyID == "") {
+          toast.error("PartyID is mandatory");
+        } else {
+          toast.error("All fields are mandatory");
+        }
+      }
+    } else if (inputDatas.modelTitle == "Entry Details") {
       const newDatas = {
         userID: cachedData._id,
         token: cachedData.accessToken,
-        data: inputDatas,
+        id,
+        partyID: partyData._id,
       };
-      CreateCollection(newDatas).then((data) => {
-        if (data?.status == "ok") {
-          handleCloseModal();
-          fetchData();
-          fetchCollection(partyData?._id);
+      DeleteCollection(newDatas).then((data) => {
+        if (data) {
+          if (data.status == "ok") {
+            toast.success(data.message);
+            handleCloseModal();
+            fetchData();
+            fetchCollection(partyData?._id);
+            setisProcessing(false);
+          } else {
+            toast.error(data.message);
+            setisProcessing(false);
+          }
+        } else {
+          setisProcessing(false);
         }
       });
-    } else {
-      if (inputDatas.partyID == "") {
-        toast.error("PartyID is mandatory");
-      } else {
-        toast.error("All fields are mandatory");
-      }
+    } else if (inputDatas.modelTitle == "Edit Entry") {
+      return null;
     }
   };
   const handleOnchange = (event) => {
     const { name, value } = event.target;
     handleFormData(name, value);
+  };
+  const getInitData = (id) => {
+    const newDatas = {
+      userID: cachedData._id,
+      token: cachedData.accessToken,
+      id,
+    };
+    GetInitCollection(newDatas).then((data) => {
+      setinputDatas({
+        modelTitle: "Entry Details",
+        details: data.details,
+        amount: data.amount,
+        expensetype: data.expensetype,
+        date: data.date,
+        partyID: data._id,
+      });
+      setopenModal(true);
+    });
   };
   return (
     <Stack
@@ -76,23 +151,67 @@ export default function DetailsContainer({
         padding: 1,
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "flex-start",
-          alignItems: "center",
-          gap: 1,
-          color: "#5d5d5d",
-        }}
-      >
-        <Avatar {...stringAvatar(partyData?.partyname)} />
-        <Stack>
-          <Typography sx={{ fontWeight: "bold", color: "black" }}>
-            {partyData?.partyname}
-          </Typography>
-          <Typography>{partyData?.phone}</Typography>
-        </Stack>
-      </Box>
+      {isLoading ? (
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            height: "48px",
+            flexDirection: "row",
+            padding: 1,
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "row",
+              gap: 1,
+            }}
+          >
+            <Skeleton
+              variant="circular"
+              sx={{
+                height: "40px",
+                width: "40px",
+                background: "#6264669c",
+              }}
+            />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-start",
+                flexDirection: "column",
+              }}
+            >
+              <Skeleton sx={{ width: "80px", background: "#6264669c" }} />
+              <Skeleton sx={{ width: "100px", background: "#6264669c" }} />
+            </Box>
+          </Box>
+        </Box>
+      ) : (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            gap: 1,
+            color: "slategray",
+          }}
+        >
+          <Avatar {...stringAvatar(partyData?.partyname)} />
+          <Stack>
+            <Typography sx={{ fontWeight: "bold", color: "white" }}>
+              {partyData?.partyname}
+            </Typography>
+            <Typography>{partyData?.phone}</Typography>
+          </Stack>
+        </Box>
+      )}
       <Box
         sx={{
           width: "100%",
@@ -102,7 +221,7 @@ export default function DetailsContainer({
           alignItems: "flex-end",
           flexDirection: "column",
           paddingX: 2,
-          color: "#5d5d5d",
+          color: "whitesmoke",
         }}
       >
         <Typography sx={{ fontWeight: "bold", textTransform: "uppercase" }}>
@@ -112,6 +231,7 @@ export default function DetailsContainer({
           amount={partyData?.amount ? partyData?.amount : 0}
           condition={partyData?.expensetype}
           type="collection"
+          isLoading={isLoading}
         />
       </Box>
       <Box
@@ -123,8 +243,8 @@ export default function DetailsContainer({
           alignItems: "center",
           flexDirection: "row",
           paddingX: 5,
-          borderBottom: "1px solid #d4c9c9",
-          color: "#5d5d5d",
+          borderBottom: "1px solid #686868",
+          color: "whitesmoke",
         }}
       >
         <Typography sx={{ fontWeight: "bold", textTransform: "uppercase" }}>
@@ -161,9 +281,66 @@ export default function DetailsContainer({
           },
         }}
       >
-        {allCollections.map((data, index) => (
-          <CollectionCard key={index} data={data} />
-        ))}
+        {isLoading ? (
+          [1, 2, 3].map((elem) => (
+            <Box
+              key={elem}
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                height: "100px",
+                flexDirection: "row",
+                paddingX: 4,
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "column",
+                }}
+              >
+                <Skeleton sx={{ width: "100px", background: "#6264669c" }} />
+                <Skeleton sx={{ width: "100px", background: "#6264669c" }} />
+              </Box>
+              <Skeleton sx={{ width: "100px", background: "#6264669c" }} />
+              <Skeleton sx={{ width: "100px", background: "#6264669c" }} />
+            </Box>
+          ))
+        ) : allCollections.length > 0 ? (
+          allCollections.map((data, index) => (
+            <CollectionCard key={index} data={data} handleClick={getInitData} />
+          ))
+        ) : (
+          <Box
+            sx={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+              gap: 1,
+            }}
+          >
+            <Box
+              component="img"
+              src="/empty.png"
+              sx={{ height: 250, width: 250 }}
+            />
+            <Typography
+              sx={{
+                color: "gray",
+                fontWeight: "bold",
+              }}
+            >
+              No data available
+            </Typography>
+          </Box>
+        )}
       </Box>
       <Box
         sx={{
@@ -173,13 +350,13 @@ export default function DetailsContainer({
           alignItems: "center",
           flexDirection: "row",
           padding: 2,
-          boxShadow: "0 -1px 0 0 #e3e3e3",
+          boxShadow: "0 -1px 0 0 #686868",
           gap: 2,
         }}
       >
         <Button
           onClick={() => {
-            handleOpenModal("DEBIT");
+            isLoading ? undefined : handleOpenModal("DEBIT");
           }}
           size="small"
           variant="contained"
@@ -191,13 +368,14 @@ export default function DetailsContainer({
             "&:hover": {
               backgroundColor: "#e79a9a",
             },
+            cursor: isLoading ? "not-allowed" : "pointer",
           }}
         >
           You gave
         </Button>
         <Button
           onClick={() => {
-            handleOpenModal("CREDIT");
+            isLoading ? undefined : handleOpenModal("CREDIT");
           }}
           size="small"
           variant="contained"
@@ -209,6 +387,7 @@ export default function DetailsContainer({
             "&:hover": {
               backgroundColor: "#a2deb6",
             },
+            cursor: isLoading ? "not-allowed" : "pointer",
           }}
         >
           You got
@@ -221,6 +400,9 @@ export default function DetailsContainer({
         type="entry"
         handleOnchange={handleOnchange}
         handleSubmit={handleSubmit}
+        isProcessing={isProcessing}
+        partyData={partyData}
+        handleFormData={handleFormData}
       />
     </Stack>
   );

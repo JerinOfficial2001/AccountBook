@@ -53,7 +53,7 @@ export default function CollectionCard({ data, handleClick }) {
         alignItems: "center",
         flexDirection: "row",
         paddingX: 5,
-        color: "#5d5d5d",
+        color: "slategray",
         "&:hover": {
           background: "#cbcbcb45",
         },
@@ -73,7 +73,7 @@ export default function CollectionCard({ data, handleClick }) {
         }}
       >
         <Stack>
-          <Typography sx={{ fontWeight: "bold", color: "black" }}>
+          <Typography sx={{ fontWeight: "bold", color: "whitesmoke" }}>
             {data?.date}
           </Typography>
           <Typography>Balance:-</Typography>
@@ -81,7 +81,7 @@ export default function CollectionCard({ data, handleClick }) {
       </Box>
       <Typography
         sx={{
-          color: data.expensetype == "DEBIT" ? "red" : "black",
+          color: data.expensetype == "DEBIT" ? "red" : "whitesmoke",
           fontWeight: "bold",
         }}
       >

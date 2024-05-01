@@ -36,12 +36,12 @@ export const putApi = async (url, data, token) => {
     throw new Error(error.message);
   }
 };
-export const deleteApi = async (url, data, token) => {
+export const deleteApi = async (url, token) => {
   try {
     const headers = {
       Authorization: `Bearer ${token}`,
     };
-    const response = await axios.delete(url, data, { headers });
+    const response = await axios.delete(url, { headers });
     return response.data;
   } catch (error) {
     console.error(error);

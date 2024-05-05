@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
-import MuiAppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
@@ -18,12 +16,11 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
-import { Stack, Tab, useMediaQuery } from "@mui/material";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
-import TabContainer from "../components/HomePage/TabContainer";
+import { useMediaQuery } from "@mui/material";
 import { Logout } from "@mui/icons-material";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
+import PersonIcon from "@mui/icons-material/Person";
 
 const drawerWidth = 240;
 
@@ -55,24 +52,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-}));
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(["width", "margin"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
 }));
 
 const Drawer = styled(MuiDrawer, {
@@ -199,7 +178,7 @@ export default function MiniDrawer({ children }) {
                   color: "#f2eeee",
                 }}
               >
-                {index % 2 === 0 ? <Logout /> : <MailIcon />}
+                {index % 2 === 0 ? <Logout /> : <PersonIcon />}
               </ListItemIcon>
               <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
@@ -343,7 +322,7 @@ export default function MiniDrawer({ children }) {
           </List>
           <Divider sx={{ borderColor: "#686868" }} />
           <List>
-            {["All mail", "Trash", "Logout"].map((text, index) => (
+            {["All mail", "My Account", "Logout"].map((text, index) => (
               <ListItem key={text} disablePadding sx={{ display: "block" }}>
                 <ListItemButton
                   onClick={() => {
@@ -363,7 +342,7 @@ export default function MiniDrawer({ children }) {
                       justifyContent: "center",
                     }}
                   >
-                    {index % 2 === 0 ? <Logout /> : <MailIcon />}
+                    {index % 2 === 0 ? <Logout /> : <PersonIcon />}
                   </ListItemIcon>
                   <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
                 </ListItemButton>

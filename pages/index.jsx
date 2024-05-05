@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import MiniDrawer from "@/src/layouts/MiniDrawer";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import TabContainer from "@/src/components/HomePage/TabContainer";
 import { useEffect, useState } from "react";
 import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
@@ -71,7 +71,7 @@ export default function Home() {
       }).then((data) => {
         if (data) {
           setPartyData(data);
-          setselectedParty(data.partyname);
+          setselectedParty(data._id);
         }
       });
       setallCollections(data);
@@ -94,7 +94,7 @@ export default function Home() {
       value: "CUSTOMER",
       content: (
         <UserContainer
-          isLoading={isLoading}
+          isLoading={isDetailLoading}
           type="CUSTOMER"
           handleClick={handleOpenUserDetail}
           Users={allParties}
@@ -110,7 +110,7 @@ export default function Home() {
       value: "SUPPLIER",
       content: (
         <UserContainer
-          isLoading={isLoading}
+          isLoading={isDetailLoading}
           type="SUPPLIER"
           Users={allParties}
           handleClick={handleOpenUserDetail}
@@ -171,7 +171,7 @@ export default function Home() {
                 lg: "40%",
                 xl: "40%",
               },
-              maxHeight: "100vh",
+              height: "100%",
               justifyContent: "center",
             }}
           >
@@ -183,7 +183,21 @@ export default function Home() {
                 partyData={PartyData}
                 fetchData={fetchData}
                 fetchCollection={fetchCollection}
+                setPartyData={setPartyData}
               />
+            ) : isDetailLoading ? (
+              <Box
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "column",
+                }}
+              >
+                <CircularProgress />
+              </Box>
             ) : (
               <Box
                 sx={{

@@ -48,7 +48,12 @@ export default function UserContainer({
     setisProcessing(true);
     e.preventDefault();
     const keys = Object.keys(inputDatas);
-    const requiredFields = keys.every((key) => inputDatas[key] !== "");
+    const requiredFields = keys.every((key) => {
+      if (key === "phone") {
+        return true;
+      }
+      return inputDatas[key] !== "";
+    });
     if (requiredFields && staticsDetails && staticsDetails?._id) {
       const newDatas = {
         userID: cachedData._id,

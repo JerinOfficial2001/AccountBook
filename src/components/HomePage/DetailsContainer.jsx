@@ -2,6 +2,7 @@ import {
   Avatar,
   Box,
   Button,
+  IconButton,
   Skeleton,
   Stack,
   Typography,
@@ -16,6 +17,8 @@ import {
   DeleteCollection,
   GetInitCollection,
 } from "@/src/controllers/collections";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { DeleteParty } from "@/src/controllers/party";
 
 export default function DetailsContainer({
   cachedData,
@@ -24,6 +27,7 @@ export default function DetailsContainer({
   allCollections,
   fetchCollection,
   isLoading,
+  setPartyData,
 }) {
   const [openModal, setopenModal] = useState(false);
   const [isProcessing, setisProcessing] = useState(false);
@@ -45,14 +49,19 @@ export default function DetailsContainer({
   };
   const handleOpenModal = (type) => {
     setopenModal(true);
-    handleFormData("expensetype", type);
-    handleFormData("modelTitle", "Add Entry");
+    if (type == "Party Details") {
+      handleFormData("modelTitle", type);
+    } else {
+      handleFormData("expensetype", type);
+      handleFormData("modelTitle", "Add Entry");
+    }
   };
   useEffect(() => {
     if (partyData) {
       handleFormData("partyID", partyData._id);
     }
   }, [partyData]);
+  console.log(partyData);
   const handleSubmit = (e, id) => {
     setisProcessing(true);
     e.preventDefault();
@@ -118,6 +127,29 @@ export default function DetailsContainer({
       });
     } else if (inputDatas.modelTitle == "Edit Entry") {
       return null;
+    } else if (inputDatas.modelTitle == "Party Details") {
+      const newDatas = {
+        userID: cachedData._id,
+        token: cachedData.accessToken,
+        id: partyData._id,
+      };
+      DeleteParty(newDatas).then((data) => {
+        if (data) {
+          if (data.status == "ok") {
+            toast.success(data.message);
+            handleCloseModal();
+            fetchData();
+            fetchCollection(partyData?._id);
+            setisProcessing(false);
+            setPartyData(null);
+          } else {
+            toast.error(data.message);
+            setisProcessing(false);
+          }
+        } else {
+          setisProcessing(false);
+        }
+      });
     }
   };
   const handleOnchange = (event) => {
@@ -197,19 +229,38 @@ export default function DetailsContainer({
         <Box
           sx={{
             display: "flex",
-            justifyContent: "flex-start",
+            justifyContent: "space-between",
             alignItems: "center",
             gap: 1,
             color: "slategray",
+            p: 1,
           }}
         >
-          <Avatar {...stringAvatar(partyData?.partyname)} />
-          <Stack>
-            <Typography sx={{ fontWeight: "bold", color: "white" }}>
-              {partyData?.partyname}
-            </Typography>
-            <Typography>{partyData?.phone}</Typography>
-          </Stack>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              gap: 1,
+              color: "slategray",
+            }}
+          >
+            <Avatar {...stringAvatar(partyData?.partyname)} />
+            <Stack>
+              <Typography sx={{ fontWeight: "bold", color: "white" }}>
+                {partyData?.partyname}
+              </Typography>
+              <Typography>{partyData?.phone}</Typography>
+            </Stack>
+          </Box>
+          <IconButton
+            onClick={() => {
+              handleOpenModal("Party Details");
+            }}
+            sx={{ color: "slategray" }}
+          >
+            <SettingsIcon />
+          </IconButton>
         </Box>
       )}
       <Box

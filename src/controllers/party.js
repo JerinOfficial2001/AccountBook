@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { getApi, postApi } from "../utils/services";
+import { deleteApi, getApi, postApi } from "../utils/services";
 import { PARTY_API } from "../API";
 
 export const GetPartyByStaticsID = async (formData) => {
@@ -47,5 +47,16 @@ export const CreateParty = async (formDatas) => {
     }
   } catch (error) {
     console.log(error, "CreatePartyErr");
+  }
+};
+export const DeleteParty = async (formData) => {
+  try {
+    const data = await deleteApi(
+      `${PARTY_API}/delete/${formData.id}?userid=${formData.userID}`,
+      formData.token
+    );
+    return data;
+  } catch (error) {
+    console.log(error, "GetStaticsErr");
   }
 };

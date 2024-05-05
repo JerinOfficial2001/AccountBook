@@ -4,7 +4,7 @@ import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Avatar, IconButton, MenuItem, Stack, TextField } from "@mui/material";
-import { Close, Delete } from "@mui/icons-material";
+import { Close, Delete, Timer } from "@mui/icons-material";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -161,7 +161,9 @@ export default function MyModal({
               sx={{
                 fontWeight: "bold",
                 color:
-                  data.expensetype == "CREDIT"
+                  data.modelTitle == "Party Details"
+                    ? ""
+                    : data.expensetype == "CREDIT"
                     ? "green"
                     : data.expensetype == "DEBIT"
                     ? "red"
@@ -564,6 +566,96 @@ export default function MyModal({
                   </Stack>
                 </Box>
               </Stack>
+            ) : data.modelTitle == "Party Details" ? (
+              <Stack gap={2}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                    gap: 1,
+                    color: "slategray",
+                  }}
+                >
+                  <Avatar {...stringAvatar(partyData?.partyname)} />
+                  <Stack>
+                    <Typography sx={{ fontWeight: "bold", color: "white" }}>
+                      {partyData?.partyname}
+                    </Typography>
+                    <Typography>{partyData?.phone}</Typography>
+                  </Stack>
+                </Box>
+                <Button
+                  onClick={() => {
+                    handleFormData("modelTitle", "Edit Entry");
+                  }}
+                  sx={{
+                    width: "80%",
+                    color: "#ffffff99",
+                    borderColor: "gray",
+                    "&:hover": {
+                      borderColor: "gray",
+                    },
+                  }}
+                  variant="outlined"
+                  startIcon={<BorderColorTwoToneIcon />}
+                >
+                  Edit Entry
+                </Button>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                    gap: 1,
+                    color: "slategray",
+                  }}
+                >
+                  <Timer />
+                  <Stack>
+                    <Typography
+                      sx={{
+                        color: "lightcyan",
+                      }}
+                    >
+                      Date
+                    </Typography>
+                    <Typography>{partyData?.date}</Typography>
+                  </Stack>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                    gap: 1,
+                    color: "slategray",
+                  }}
+                >
+                  <CurrencyRupeeIcon
+                    sx={{ border: "2px solid slategray", borderRadius: "50%" }}
+                  />
+                  <Stack>
+                    <Typography
+                      sx={{
+                        color: "lightcyan",
+                      }}
+                    >
+                      Running Balance
+                    </Typography>
+                    <Typography
+                      sx={{
+                        color:
+                          partyData.expensetype == "DEBIT" ? "red" : "green",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      ₹ {partyData?.amount}
+                    </Typography>
+                  </Stack>
+                </Box>
+              </Stack>
             ) : null}
             <Box
               sx={{
@@ -586,12 +678,16 @@ export default function MyModal({
                 sx={{
                   borderRadius: "20px",
                   background:
-                    data.modelTitle == "Entry Details" ? "red" : "#1f1f9d",
+                    data.modelTitle == "Entry Details" ||
+                    data.modelTitle == "Party Details"
+                      ? "red"
+                      : "#1f1f9d",
                   color: "white",
                   fontWeight: "bold",
                   width: isProcessing ? "37px !important" : "100%",
                   "&:hover": {
                     backgroundColor:
+                      data.modelTitle == "Party Details" ||
                       data.modelTitle == "Entry Details"
                         ? "#de5d5d"
                         : "#4646ed",
@@ -604,7 +700,8 @@ export default function MyModal({
                 ) : type == "party" ? (
                   "Add Party"
                 ) : type == "entry" ? (
-                  data.modelTitle == "Entry Details" ? (
+                  data.modelTitle == "Entry Details" ||
+                  data.modelTitle == "Party Details" ? (
                     "Delete"
                   ) : data.modelTitle == "Edit Entry" ? (
                     "Edit Entry"

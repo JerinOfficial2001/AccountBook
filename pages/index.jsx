@@ -14,18 +14,17 @@ import { GetStaticsByType } from "@/src/controllers/statics";
 import { getDecryptedCookie } from "@/src/utils/EncryptCookie";
 import { GetInitPartyID, GetPartyByStaticsID } from "@/src/controllers/party";
 import { GetCollectionByPartyID } from "@/src/controllers/collections";
+import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const [tabName, settabName] = useState("CUSTOMER");
   const [PartyData, setPartyData] = useState(null);
   const [selectedParty, setselectedParty] = useState("");
-  const [staticsDetails, setstaticsDetails] = useState(null);
-  const [allParties, setallParties] = useState([]);
+  // const [allParties, setallParties] = useState([]);
   const [allCollections, setallCollections] = useState([]);
   const [isLoading, setisLoading] = useState(false);
-  const [isDetailLoading, setisDetailLoading] = useState(false);
-  const cookie = getDecryptedCookie("userData");
+  const cookie = getDecryptedCookie("accountBook_userData");
   const cachedData = cookie ? JSON.parse(cookie) : false;
   const [initiation, setinitiation] = useState(true);
   useEffect(() => {
@@ -34,58 +33,63 @@ export default function Home() {
     }, 3000);
     () => clearTimeout(timer);
   }, [cookie]);
-  const fetchData = () => {
-    setisLoading(true);
-
-    if (cachedData) {
-      GetStaticsByType({
-        id: cachedData._id,
-        token: cachedData.accessToken,
-        type: tabName,
-      }).then((data) => {
-        setstaticsDetails(data);
-        GetPartyByStaticsID({
-          staticID: data?._id,
-          userID: cachedData._id,
-          token: cachedData.accessToken,
-        }).then((data) => {
-          setallParties(data);
-          setisLoading(false);
-        });
-      });
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, [tabName]);
-  const fetchCollection = (id) => {
-    GetCollectionByPartyID({
-      partyID: id,
-      userID: cachedData._id,
-      token: cachedData.accessToken,
-    }).then((data) => {
-      GetInitPartyID({
-        id,
+  const {
+    data: staticsDetails,
+    isLoading: staticsLoading,
+    refetch: refetchStatics,
+  } = useQuery({
+    queryFn: GetStaticsByType,
+    queryKey: [
+      "statics",
+      { id: cachedData._id, token: cachedData.accessToken, type: tabName },
+    ],
+    enabled: cachedData != false,
+  });
+  const {
+    data: allParties,
+    isLoading: partyLoading,
+    refetch: refetchparty,
+  } = useQuery({
+    queryFn: GetPartyByStaticsID,
+    queryKey: [
+      "party",
+      {
+        staticID: staticsDetails?._id,
         userID: cachedData._id,
         token: cachedData.accessToken,
-      }).then((data) => {
-        if (data) {
-          setPartyData(data);
-          setselectedParty(data._id);
-        }
-      });
-      setallCollections(data);
-      setisDetailLoading(false);
-    });
+      },
+    ],
+    enabled: cachedData != false && staticsDetails != null,
+  });
+  const fetchUserContainerDatas = () => {
+    refetchStatics();
+    refetchparty();
   };
+  useEffect(() => {
+    // fetchData();
+  }, [tabName]);
+
+  const { mutate: getCollections, isPending: collectionLoading } = useMutation({
+    mutationFn: GetCollectionByPartyID,
+    onSuccess: (data) => {
+      setallCollections(data);
+    },
+  });
+  const { mutate: getInitParty, isPending: partyDataLoading } = useMutation({
+    mutationFn: GetInitPartyID,
+    onSuccess: (data) => {
+      setPartyData(data);
+      setselectedParty(data._id);
+    },
+  });
   const handleTabName = (e, name) => {
     settabName(name);
     setPartyData(null);
     setselectedParty("");
   };
   const handleOpenUserDetail = (id) => {
-    setisDetailLoading(true);
-    fetchCollection(id);
+    getCollections(id);
+    getInitParty(id);
   };
 
   const tabArr = [
@@ -94,14 +98,14 @@ export default function Home() {
       value: "CUSTOMER",
       content: (
         <UserContainer
-          isLoading={isDetailLoading}
+          isLoading={partyLoading}
           type="CUSTOMER"
           handleClick={handleOpenUserDetail}
           Users={allParties}
           selectedParty={selectedParty}
           staticsDetails={staticsDetails}
           cachedData={cachedData}
-          fetchData={fetchData}
+          fetchData={fetchUserContainerDatas}
         />
       ),
     },
@@ -110,14 +114,14 @@ export default function Home() {
       value: "SUPPLIER",
       content: (
         <UserContainer
-          isLoading={isDetailLoading}
+          isLoading={partyLoading}
           type="SUPPLIER"
           Users={allParties}
           handleClick={handleOpenUserDetail}
           selectedParty={selectedParty}
           staticsDetails={staticsDetails}
           cachedData={cachedData}
-          fetchData={fetchData}
+          fetchData={fetchUserContainerDatas}
         />
       ),
     },
@@ -177,15 +181,15 @@ export default function Home() {
           >
             {PartyData ? (
               <DetailsContainer
-                isLoading={isDetailLoading}
+                isLoading={collectionLoading}
                 allCollections={allCollections}
                 cachedData={cachedData}
                 partyData={PartyData}
-                fetchData={fetchData}
-                fetchCollection={fetchCollection}
+                fetchData={refetchStatics}
+                fetchCollection={handleOpenUserDetail}
                 setPartyData={setPartyData}
               />
-            ) : isDetailLoading ? (
+            ) : partyDataLoading ? (
               <Box
                 sx={{
                   width: "100%",

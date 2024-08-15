@@ -61,7 +61,6 @@ export default function DetailsContainer({
       handleFormData("partyID", partyData._id);
     }
   }, [partyData]);
-  console.log(partyData);
   const handleSubmit = (e, id) => {
     setisProcessing(true);
     e.preventDefault();

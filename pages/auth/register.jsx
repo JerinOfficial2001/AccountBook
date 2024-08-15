@@ -70,7 +70,10 @@ export default function Register() {
             if (data.token) {
               UserDataController(data.token).then((res) => {
                 if (res.status == "ok") {
-                  setEncryptedCookie("userData", JSON.stringify(res.data));
+                  setEncryptedCookie(
+                    "accountBook_userData",
+                    JSON.stringify(res.data)
+                  );
                   toast.success("Logged in successfully");
                   window.location.href = "/";
                   setisProcessing(false);
@@ -104,10 +107,10 @@ export default function Register() {
     >
       <Typography
         id="keep-mounted-modal-title"
-        variant="h4"
+        variant="h5"
         sx={{
           fontWeight: "bold",
-          color: "gray",
+          color: "#6dccdd",
           textTransform: "uppercase",
         }}
       >
@@ -124,15 +127,17 @@ export default function Register() {
           onChange={inputData.onchange}
           sx={{
             "& .MuiFormLabel-root": {
-              color: "#5d5d5d",
+              color: "#459ea6",
             },
             "& label.Mui-focused": {
-              color: "#5d5d5d",
+              color: "#6dccdd",
             },
             "& .MuiInputBase-root": {
               "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: "gray !important",
+                borderColor: "#406e72 !important",
               },
+              color: "#406e72",
+              "&.Mui-focused": { color: "white" },
             },
           }}
         />

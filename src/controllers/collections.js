@@ -1,20 +1,29 @@
 import toast from "react-hot-toast";
 import { deleteApi, getApi, postApi } from "../utils/services";
 import { COLLECTION_API } from "../API";
+import { getDecryptedCookie } from "../utils/EncryptCookie";
 
-export const GetCollectionByPartyID = async (formData) => {
-  try {
-    const data = await getApi(
-      `${COLLECTION_API}/get/${formData.partyID}?userid=${formData.userID}`,
-      formData.token
-    );
-    if (data.status == "ok") {
-      return data.data;
-    } else {
-      toast.error(data.message);
+export const GetCollectionByPartyID = async (ID) => {
+  const cookie = getDecryptedCookie("accountBook_userData");
+  const cachedData = cookie ? JSON.parse(cookie) : false;
+  if (cachedData) {
+    try {
+      const data = await getApi(
+        `${COLLECTION_API}/get/${ID}?userid=${cachedData._id}`,
+        cachedData.accessToken
+      );
+      if (data.status == "ok") {
+        return data.data;
+      } else {
+        toast.error(data.message);
+        return null;
+      }
+    } catch (error) {
+      console.log(error, "GetCollectionByPartyIDErr");
     }
-  } catch (error) {
-    console.log(error, "GetCollectionByPartyIDErr");
+  } else {
+    toast.error("Un-authorized");
+    return null;
   }
 };
 export const GetInitCollection = async (formData) => {

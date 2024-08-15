@@ -10,7 +10,7 @@ export default function TabContainer({ tabName, handleTabName, tabData }) {
         onChange={handleTabName}
         aria-label="simple tabs 
                         example"
-        TabIndicatorProps={{ style: { backgroundColor: "#009b07" } }}
+        TabIndicatorProps={{ style: { backgroundColor: "#6dccdd" } }}
         sx={{
           background: "#3b3b3b",
           "& .MuiTab-root.Mui-selected": {

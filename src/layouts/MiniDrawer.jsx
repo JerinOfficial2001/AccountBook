@@ -90,7 +90,7 @@ export default function MiniDrawer({ children }) {
     setOpen(true);
   };
   const handleLogout = () => {
-    Cookies.remove("userData");
+    Cookies.remove("accountBook_userData");
     router.push("/auth/login");
   };
   const DrawerList = (
@@ -130,34 +130,10 @@ export default function MiniDrawer({ children }) {
             )}
           </IconButton>
         </DrawerHeader>
-
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <ListItem key={text} disablePadding sx={{ display: "block" }}>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? "initial" : "center",
-                px: 2.5,
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : "auto",
-                  justifyContent: "center",
-                  color: "#f2eeee",
-                }}
-              >
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-          </ListItem>
-        ))}
       </List>
-      <Divider sx={{ borderColor: "#686868" }} />
+      {/* <Divider sx={{ borderColor: "#686868" }} /> */}
       <List>
-        {["All mail", "Trash", "Logout"].map((text, index) => (
+        {["My Account", "Logout"].map((text, index) => (
           <ListItem key={text} disablePadding sx={{ display: "block" }}>
             <ListItemButton
               onClick={() => {
@@ -178,7 +154,7 @@ export default function MiniDrawer({ children }) {
                   color: "#f2eeee",
                 }}
               >
-                {index % 2 === 0 ? <Logout /> : <PersonIcon />}
+                {index % 2 === 1 ? <Logout /> : <PersonIcon />}
               </ListItemIcon>
               <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>

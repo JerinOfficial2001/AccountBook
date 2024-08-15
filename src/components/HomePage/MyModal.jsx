@@ -4,13 +4,12 @@ import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Avatar, IconButton, MenuItem, Stack, TextField } from "@mui/material";
-import { Close, Delete, Timer } from "@mui/icons-material";
+import { Autorenew, Close, Delete, Timer } from "@mui/icons-material";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
-import RefreshIcon from "@mui/icons-material/Refresh";
 import { stringAvatar } from "./CollectionCard";
 import KeyboardArrowLeftTwoToneIcon from "@mui/icons-material/KeyboardArrowLeftTwoTone";
 import BorderColorTwoToneIcon from "@mui/icons-material/BorderColorTwoTone";
@@ -696,7 +695,7 @@ export default function MyModal({
                 }}
               >
                 {isProcessing ? (
-                  <RefreshIcon className="loadingBtn" />
+                  <Autorenew className="loadingBtn" />
                 ) : type == "party" ? (
                   "Add Party"
                 ) : type == "entry" ? (

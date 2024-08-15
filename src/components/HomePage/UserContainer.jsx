@@ -135,7 +135,7 @@ export default function UserContainer({
       <Box
         sx={{
           width: "100%",
-          height: Users.length > 0 ? "77%" : "87%",
+          height: Users?.length > 0 ? "77%" : "87%",
           "&:hover": {
             overflowY: "auto",
           },
@@ -203,8 +203,8 @@ export default function UserContainer({
               </Box>
             </Box>
           ))
-        ) : Users.length > 0 ? (
-          Users.map((data, index) => (
+        ) : Users?.length > 0 ? (
+          Users?.map((data, index) => (
             <UserCard
               selectedParty={selectedParty}
               key={index}
